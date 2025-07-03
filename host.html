@@ -351,13 +351,22 @@
             getServerInfo() {
                 console.log("getServerInfo called, this.server =", this.server);
                 if (!this.server) {
-                    console.log("Prompting for game code...");
-                    this.server = window.prompt("Please enter your game code:");
-                    console.log("User entered:", this.server);
-                    if (!this.server) {
-                        alert("Game Code or server address is required!");
-                        this.getServerInfo();
-                        return;
+                    // Check URL parameters for game code
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const codeFromUrl = urlParams.get('code');
+                    
+                    if (codeFromUrl) {
+                        console.log("Game code from URL:", codeFromUrl);
+                        this.server = codeFromUrl;
+                    } else {
+                        console.log("Prompting for game code...");
+                        this.server = window.prompt("Please enter your game code:");
+                        console.log("User entered:", this.server);
+                        if (!this.server) {
+                            alert("Game Code or server address is required!");
+                            this.getServerInfo();
+                            return;
+                        }
                     }
                 }
             }
