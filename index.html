@@ -467,11 +467,19 @@ class JeopardyClient {
     
     getConnectionInfo() {
         if (!this.server) {
-            this.server = window.prompt("Please enter your game code:");
-            if (!this.server) {
-                alert("Game Code or server address is required!");
-                this.getConnectionInfo();
-                return;
+            // Check URL parameters for game code
+            const urlParams = new URLSearchParams(window.location.search);
+            const codeFromUrl = urlParams.get('code');
+            
+            if (codeFromUrl) {
+                this.server = codeFromUrl;
+            } else {
+                this.server = window.prompt("Please enter your game code:");
+                if (!this.server) {
+                    alert("Game Code or server address is required!");
+                    this.getConnectionInfo();
+                    return;
+                }
             }
         }
         
