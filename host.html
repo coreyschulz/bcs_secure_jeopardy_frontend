@@ -139,19 +139,26 @@
             font-size: 1rem;
         }
         .button-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 1rem;
             margin-bottom: 2rem;
         }
         
+        .primary-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .secondary-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            justify-content: center;
+        }
+        
         button {
-            font-size: 1.1rem;
-            padding: 1rem 1.5rem;
             border: none;
             border-radius: 8px;
-            background-color: crimson;
-            color: white;
             cursor: pointer;
             box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
             transition: all 0.3s ease 0s;
@@ -159,7 +166,26 @@
             touch-action: manipulation;
             -webkit-user-select: none;
             user-select: none;
-            min-height: 50px;
+            color: white;
+        }
+        
+        .primary-button {
+            font-size: 1.4rem;
+            padding: 1.5rem 2rem;
+            min-height: 70px;
+        }
+        
+        .secondary-button {
+            font-size: 0.95rem;
+            padding: 0.75rem 1.25rem;
+            min-height: 45px;
+            background-color: #6c757d;
+        }
+        
+        .secondary-button:hover {
+            background-color: #5a6268;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15);
+            transform: translateY(-1px);
         }
         button:hover {
             box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.15);
@@ -169,22 +195,22 @@
             transform: scale(0.98);
         }
         #bootButton {
-            background-color: crimson;
-        }
-        #bootButton:hover {
             background-color: #dc143c;
         }
+        #bootButton:hover {
+            background-color: #b91c1c;
+        }
         #winButton {
-            background-color: limegreen;
+            background-color: #22c55e;
         }
         #winButton:hover {
-            background-color: #228b22;
+            background-color: #16a34a;
         }
         #finalJeopardyButton {
-            background-color: #4169e1;
+            background-color: #3b82f6;
         }
         #finalJeopardyButton:hover {
-            background-color: #1e3a8a;
+            background-color: #2563eb;
         }
         .final-answers-section {
             background: white;
@@ -267,16 +293,18 @@
             color: #ff8c00;
         }
         #wagerButton {
-            background-color: orange;
+            background-color: #f59e0b;
         }
         #wagerButton:hover {
-            background-color: #ff8c00;
+            background-color: #d97706;
         }
         #resetButton {
-            background-color: #8b0000;
+            background-color: #6c757d;
+            opacity: 0.8;
         }
         #resetButton:hover {
-            background-color: #a52a2a;
+            background-color: #5a6268;
+            opacity: 1;
         }
         .connection-status {
             display: inline-block;
@@ -330,16 +358,26 @@
                 margin-bottom: 0.75rem;
             }
             
-            .button-grid {
+            .primary-buttons {
                 grid-template-columns: 1fr;
                 gap: 0.75rem;
-                margin-bottom: 1.5rem;
             }
             
-            button {
-                font-size: 1rem;
-                padding: 1rem;
+            .primary-button {
+                font-size: 1.2rem;
+                padding: 1.25rem;
                 width: 100%;
+            }
+            
+            .secondary-buttons {
+                gap: 0.5rem;
+            }
+            
+            .secondary-button {
+                font-size: 0.9rem;
+                padding: 0.75rem 1rem;
+                flex: 1 1 auto;
+                min-width: 120px;
             }
             
             .section-title {
@@ -371,9 +409,18 @@
             }
             
             .button-grid {
-                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-                max-width: 800px;
+                max-width: 600px;
                 margin: 0 auto 2rem;
+            }
+            
+            .primary-buttons {
+                max-width: 500px;
+                margin: 0 auto 1.5rem;
+            }
+            
+            .secondary-buttons {
+                max-width: 600px;
+                margin: 0 auto;
             }
         }
         
@@ -403,7 +450,6 @@
     <div class="header">
         <h1>Host Panel</h1>
         <h2>BCS Secure Jeopardy</h2>
-        <div id="connectionStatus" class="connection-status" style="display: none;">CONNECTED</div>
     </div>
     
     <div class="main-content">
@@ -417,11 +463,15 @@
             </div>
             
             <div class="button-grid">
-                <button id="bootButton" onclick="bootPlayer()">WRONG</button>
-                <button id="winButton" onclick="markWin()">Correct!</button>
-                <button id="finalJeopardyButton" onclick="startFinalJeopardy()">Final Jeopardy</button>
-                <button id="wagerButton" onclick="requestWagers()">Request Wagers</button>
-                <button id="resetButton" onclick="resetGame()">Reset Game</button>
+                <div class="primary-buttons">
+                    <button id="winButton" class="primary-button" onclick="markWin()">✓ Correct!</button>
+                    <button id="bootButton" class="primary-button" onclick="bootPlayer()">✗ WRONG</button>
+                </div>
+                <div class="secondary-buttons">
+                    <button id="finalJeopardyButton" class="secondary-button" onclick="startFinalJeopardy()">Final Jeopardy</button>
+                    <button id="wagerButton" class="secondary-button" onclick="requestWagers()">Request Wagers</button>
+                    <button id="resetButton" class="secondary-button" onclick="resetGame()">Reset Game</button>
+                </div>
             </div>
         </div>
         
@@ -688,12 +738,6 @@
                 this.reconnectAttempts = 0;
                 this.reconnectDelay = 1000;
                 
-                // Show connection status
-                const statusElement = document.getElementById('connectionStatus');
-                if (statusElement) {
-                    statusElement.style.display = 'inline-block';
-                    statusElement.textContent = 'CONNECTED';
-                }
                 
                 this.sendMessage("host");
                 this.startHeartbeat();
@@ -782,11 +826,6 @@
                 this.connectionState = 'disconnected';
                 this.stopHeartbeat();
                 
-                // Hide connection status
-                const statusElement = document.getElementById('connectionStatus');
-                if (statusElement) {
-                    statusElement.style.display = 'none';
-                }
                 
                 if (event.code !== 1000) {
                     this.updateTitle("Host Panel - Disconnected");
