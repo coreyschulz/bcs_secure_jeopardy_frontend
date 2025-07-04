@@ -1,35 +1,81 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Host Panel - BCS Secure Jeopardy</title>
     <style>
-        body {
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start;
-            align-items: center;
-            height: 100vh;
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 30px 0 0 0;
+        * {
             box-sizing: border-box;
         }
-        h1 {
-            position: absolute;
-            top: 40px;
-            font-size: 2em;
+        
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
             margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            color: #333;
+            font-size: 16px;
+            -webkit-tap-highlight-color: transparent;
         }
+        .header {
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 1.8rem;
+            margin: 0;
+            color: #2c3e50;
+        }
+        
+        h2 {
+            font-size: 1.2rem;
+            margin: 0.5rem 0 0 0;
+            color: #7f8c8d;
+            font-weight: normal;
+        }
+        .main-content {
+            flex: 1;
+            padding: 1rem;
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+        }
+        
+        .control-section {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
         .switchContainer {
-            position: absolute;
-            top: 230px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        
+        .switch-label {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
         }
         .switch {
             position: relative;
             display: inline-block;
-            width: 120px;
-            height: 68px;
+            width: 100px;
+            height: 50px;
         }
         .switch input {
             opacity: 0;
@@ -45,15 +91,16 @@
             bottom: 0;
             background-color: #ccc;
             transition: .4s;
-            border-radius: 68px;
+            border-radius: 50px;
+            touch-action: manipulation;
         }
         .slider:before {
             position: absolute;
             content: "";
-            height: 52px;
-            width: 52px;
-            left: 8px;
-            bottom: 8px;
+            height: 38px;
+            width: 38px;
+            left: 6px;
+            bottom: 6px;
             background-color: white;
             transition: .4s;
             border-radius: 50%;
@@ -62,108 +109,135 @@
             background-color: #FFD700;
         }
         input:checked + .slider:before {
-            transform: translateX(52px);
+            transform: translateX(50px);
         }
-        #queue {
-            position: absolute;
-            top: 630px;
+        .queue-section {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #2c3e50;
         }
         #queue ul {
             list-style-type: none;
             padding: 0;
+            margin: 0;
         }
         #queue li {
-            margin-bottom: 5px;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            background: #f8f9fa;
+            border-radius: 6px;
+            border-left: 4px solid #FFD700;
+            font-size: 1rem;
         }
+        .button-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
         button {
-            position: absolute;
-            top: 430px;
-            font-size: 1.5em;
-            padding: 15px;
+            font-size: 1.1rem;
+            padding: 1rem 1.5rem;
             border: none;
-            border-radius: 5px;
+            border-radius: 8px;
             background-color: crimson;
-            color: black;
+            color: white;
             cursor: pointer;
-            box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
             transition: all 0.3s ease 0s;
+            font-weight: 600;
+            touch-action: manipulation;
+            -webkit-user-select: none;
+            user-select: none;
+            min-height: 50px;
         }
         button:hover {
-            background-color: #f92f2f;
-            box-shadow: 0px 15px 20px rgba(0, 0, 0, 0.2);
-            transform: translateY(-7px);
+            box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
         }
         button:active {
-            transform: scale(0.95);
+            transform: scale(0.98);
+        }
+        #bootButton {
+            background-color: crimson;
+        }
+        #bootButton:hover {
+            background-color: #dc143c;
         }
         #winButton {
-        position: absolute;
-        top: 330px;
-        background-color: limegreen;
-        color: white;
+            background-color: limegreen;
+        }
+        #winButton:hover {
+            background-color: #228b22;
         }
         #finalJeopardyButton {
-        position: absolute;
-        top: 50px;
-        left: 20px;
-        background-color: blue;
-        color: white;
+            background-color: #4169e1;
         }
-        #winButton:hover, #finalJeopardyButton:hover {
-            background-color: darkgreen;
+        #finalJeopardyButton:hover {
+            background-color: #1e3a8a;
         }
-        #winButton:active, #finalJeopardyButton:active {
-            transform: scale(0.95);
-        }
-        #finalAnswers {
-            position: absolute;
-            top: 730px;
+        .final-answers-section {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
         #finalAnswers ul {
             list-style-type: none;
             padding: 0;
+            margin: 0;
         }
         #finalAnswers li {
-            margin-bottom: 5px;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            background: #f0f8ff;
+            border-radius: 6px;
+            border-left: 4px solid #4169e1;
         }
-        #connectedPlayers {
-            position: absolute;
-            top: 120px;
-            left: 50%;
-            transform: translateX(-50%);
-            text-align: center;
+        .players-section {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
         #connectedPlayers ul {
             list-style-type: none;
             padding: 0;
+            margin: 0;
             display: flex;
             flex-wrap: wrap;
-            justify-content: center;
-            gap: 10px;
+            gap: 0.5rem;
         }
         #connectedPlayers li {
-            margin-bottom: 5px;
             display: flex;
             align-items: center;
             background: linear-gradient(45deg, #f0f0f0, #e0e0e0);
-            padding: 5px 10px;
-            border-radius: 15px;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
             border: 2px solid #ccc;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             color: #333;
             font-weight: 500;
-        }
-        #connectedPlayers h3 {
-            margin-bottom: 10px;
-            color: #333;
-            font-size: 1.1em;
+            font-size: 0.9rem;
         }
         .connection-indicator {
-            width: 10px;
-            height: 10px;
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
             background-color: #00ff00;
-            margin-right: 10px;
+            margin-right: 8px;
             animation: pulse 2s infinite;
         }
         @keyframes pulse {
@@ -171,88 +245,206 @@
             50% { opacity: 0.3; }
             100% { opacity: 1; }
         }
-        #wagersSection {
-            position: absolute;
-            top: 830px;
+        .wagers-section {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
         #wagersSection ul {
             list-style-type: none;
             padding: 0;
+            margin: 0;
         }
         #wagersSection li {
-            margin-bottom: 5px;
-            font-weight: bold;
-            color: #FFD700;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            background: #fffaf0;
+            border-radius: 6px;
+            border-left: 4px solid #ffa500;
+            font-weight: 600;
+            color: #ff8c00;
         }
         #wagerButton {
-            position: absolute;
-            top: 110px;
-            left: 20px;
             background-color: orange;
-            color: white;
         }
         #wagerButton:hover {
-            background-color: darkorange;
+            background-color: #ff8c00;
         }
         #resetButton {
-            position: absolute;
-            top: 170px;
-            left: 20px;
-            background-color: crimson;
-            color: white;
-            font-size: 1em;
-            padding: 10px;
+            background-color: #8b0000;
         }
         #resetButton:hover {
-            background-color: darkred;
+            background-color: #a52a2a;
         }
         .connection-status {
+            display: inline-block;
             background: linear-gradient(45deg, #00ff00, #32ff32);
             color: #000;
-            padding: 8px 16px;
+            padding: 0.5rem 1rem;
             border-radius: 25px;
             font-weight: bold;
-            font-size: 0.8em;
-            letter-spacing: 2px;
-            box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
             animation: pulseGlow 2s ease-in-out infinite;
             border: 2px solid #00ff00;
+            margin-top: 0.5rem;
         }
         @keyframes pulseGlow {
             0% { 
-                box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+                box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
                 transform: scale(1);
             }
             50% { 
-                box-shadow: 0 0 30px rgba(0, 255, 0, 0.8);
-                transform: scale(1.05);
+                box-shadow: 0 0 25px rgba(0, 255, 0, 0.6);
+                transform: scale(1.02);
             }
             100% { 
-                box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+                box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
                 transform: scale(1);
             }
+        }
+        
+        /* Mobile-specific adjustments */
+        @media (max-width: 768px) {
+            .header {
+                padding: 0.75rem;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            h2 {
+                font-size: 1rem;
+            }
+            
+            .main-content {
+                padding: 0.5rem;
+            }
+            
+            .control-section, .queue-section, .players-section, .final-answers-section, .wagers-section {
+                padding: 1rem;
+                margin-bottom: 0.75rem;
+            }
+            
+            .button-grid {
+                grid-template-columns: 1fr;
+                gap: 0.75rem;
+                margin-bottom: 1.5rem;
+            }
+            
+            button {
+                font-size: 1rem;
+                padding: 1rem;
+                width: 100%;
+            }
+            
+            .section-title {
+                font-size: 1.1rem;
+            }
+            
+            #queue li, #finalAnswers li, #wagersSection li {
+                font-size: 0.9rem;
+                padding: 0.5rem;
+            }
+        }
+        
+        /* Larger screens */
+        @media (min-width: 769px) {
+            .header {
+                padding: 1.5rem;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .main-content {
+                padding: 2rem;
+            }
+            
+            .control-section {
+                text-align: center;
+            }
+            
+            .button-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                max-width: 800px;
+                margin: 0 auto 2rem;
+            }
+        }
+        
+        /* Fix input styling for better mobile experience */
+        input[type="checkbox"] {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+        }
+        
+        /* Prevent zoom on input focus on iOS */
+        @media (max-width: 768px) {
+            input {
+                font-size: 16px !important;
+            }
+        }
+        
+        /* Hide sections that don't have content */
+        .queue-section:not(:has(li)),
+        .final-answers-section:not(:has(li)),
+        .wagers-section:not(:has(li)) {
+            display: none;
         }
     </style>
 </head>
 <body>
-    <h1>Host Panel</h1>
-    <br><br>
-    <h2>BCS Secure Jeopardy</h2>
-    <div class="switchContainer">
-        <label class="switch">
-            <input type="checkbox" id="toggleSwitch">
-            <span class="slider"></span>
-        </label>
+    <div class="header">
+        <h1>Host Panel</h1>
+        <h2>BCS Secure Jeopardy</h2>
+        <div id="connectionStatus" class="connection-status" style="display: none;">CONNECTED</div>
     </div>
-    <button id="bootButton" onclick="bootPlayer()">WRONG</button>
-    <button id="winButton" onclick="markWin()">Correct!</button>
-    <button id="finalJeopardyButton" onclick="startFinalJeopardy()">Final Jeopardy</button>
-    <button id="wagerButton" onclick="requestWagers()">Request Wagers</button>
-    <button id="resetButton" onclick="resetGame()">Reset Game</button>
-    <div id="queue"></div>
-    <div id="connectedPlayers"></div>
-    <div id="wagersSection"></div>
-    <div id="finalAnswers"></div>
+    
+    <div class="main-content">
+        <div class="control-section">
+            <div class="switchContainer">
+                <div class="switch-label">Game Status</div>
+                <label class="switch">
+                    <input type="checkbox" id="toggleSwitch">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            
+            <div class="button-grid">
+                <button id="bootButton" onclick="bootPlayer()">WRONG</button>
+                <button id="winButton" onclick="markWin()">Correct!</button>
+                <button id="finalJeopardyButton" onclick="startFinalJeopardy()">Final Jeopardy</button>
+                <button id="wagerButton" onclick="requestWagers()">Request Wagers</button>
+                <button id="resetButton" onclick="resetGame()">Reset Game</button>
+            </div>
+        </div>
+        
+        <div class="players-section">
+            <h3 class="section-title">Connected Players</h3>
+            <div id="connectedPlayers"></div>
+        </div>
+        
+        <div class="queue-section">
+            <h3 class="section-title">Buzzer Queue</h3>
+            <div id="queue"></div>
+        </div>
+        
+        <div class="wagers-section">
+            <h3 class="section-title">Wagers</h3>
+            <div id="wagersSection"></div>
+        </div>
+        
+        <div class="final-answers-section">
+            <h3 class="section-title">Final Answers</h3>
+            <div id="finalAnswers"></div>
+        </div>
+    </div>
 
     <script>
         // Browser compatibility polyfills
@@ -496,6 +688,13 @@
                 this.reconnectAttempts = 0;
                 this.reconnectDelay = 1000;
                 
+                // Show connection status
+                const statusElement = document.getElementById('connectionStatus');
+                if (statusElement) {
+                    statusElement.style.display = 'inline-block';
+                    statusElement.textContent = 'CONNECTED';
+                }
+                
                 this.sendMessage("host");
                 this.startHeartbeat();
             }
@@ -532,7 +731,7 @@
                     let connectedHtml = message.connected_players.map(username => 
                         `<li><span class="connection-indicator"></span>${username}</li>`
                     ).join("");
-                    this.connectedPlayersDiv.innerHTML = `<h3>Connected Players:</h3><ul>${connectedHtml}</ul>`;
+                    this.connectedPlayersDiv.innerHTML = `<ul>${connectedHtml}</ul>`;
                 }
                 
                 if (typeof message === "string" && message.startsWith("FINAL_ANSWER:")) {
@@ -542,7 +741,12 @@
                         let answer = components.slice(2).join(":"); // In case answer contains colons
                         let listItem = document.createElement("li");
                         listItem.textContent = username + ": " + answer;
-                        this.finalAnswersDiv.appendChild(listItem);
+                        
+                        if (!this.finalAnswersDiv.querySelector("ul")) {
+                            let ul = document.createElement("ul");
+                            this.finalAnswersDiv.appendChild(ul);
+                        }
+                        this.finalAnswersDiv.querySelector("ul").appendChild(listItem);
                     }
                 }
                 
@@ -558,11 +762,6 @@
                             let listItem = document.createElement("li");
                             listItem.id = "wager-" + username;
                             listItem.textContent = username + ": $" + wager;
-                            if (!this.wagersSectionDiv.querySelector("h3")) {
-                                let heading = document.createElement("h3");
-                                heading.textContent = "Final Jeopardy Wagers:";
-                                this.wagersSectionDiv.appendChild(heading);
-                            }
                             if (!this.wagersSectionDiv.querySelector("ul")) {
                                 let ul = document.createElement("ul");
                                 this.wagersSectionDiv.appendChild(ul);
@@ -582,6 +781,12 @@
                 console.log("Host WebSocket closed:", event.code, event.reason);
                 this.connectionState = 'disconnected';
                 this.stopHeartbeat();
+                
+                // Hide connection status
+                const statusElement = document.getElementById('connectionStatus');
+                if (statusElement) {
+                    statusElement.style.display = 'none';
+                }
                 
                 if (event.code !== 1000) {
                     this.updateTitle("Host Panel - Disconnected");
