@@ -720,8 +720,22 @@ class JeopardyClient {
         }
     }
     
-    getRandomMessage() {
-        return this.fun_messages[Math.floor(Math.random() * this.fun_messages.length)];
+    // Simple hash function to convert string to number
+    hashString(str) {
+        let hash = 0;
+        for (let i = 0; i < str.length; i++) {
+            const char = str.charCodeAt(i);
+            hash = ((hash << 5) - hash) + char;
+            hash = hash & hash; // Convert to 32-bit integer
+        }
+        return Math.abs(hash);
+    }
+    
+    getRandomMessage(playerName) {
+        // Use player name to deterministically select a message
+        const hash = this.hashString(playerName || '');
+        const index = hash % this.fun_messages.length;
+        return this.fun_messages[index];
     }
     
     updatePlayersList() {
@@ -729,7 +743,7 @@ class JeopardyClient {
             this.status.textContent = "Waiting for players...";
         } else {
             const player_strings = this.connected_players.map(player => 
-                `<span class="connection-indicator"></span>${player.toLowerCase()} ${this.getRandomMessage()}`
+                `<span class="connection-indicator"></span>${player.toLowerCase()} ${this.getRandomMessage(player)}`
             );
             this.status.innerHTML = player_strings.join("<br>");
         }
