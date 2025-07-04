@@ -69,6 +69,20 @@ button:disabled {
   cursor: not-allowed;
 }
 
+button.host-disabled {
+  background-color: #888;
+  color: #444;
+  box-shadow: none;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+button.host-disabled:hover {
+  background-color: #888;
+  box-shadow: none;
+  transform: none;
+}
+
 #penalty_message {
   position: absolute;
   top: 150px;
@@ -355,6 +369,7 @@ class JeopardyClient {
         this.heartbeatInterval = null;
         this.connectionState = 'disconnected';
         this.audioContext = null;
+        this.buzzLockState = false; // Track whether buzzer is enabled by host
         this.initAudio();
         
         // Connected players list and fun messages
@@ -387,6 +402,9 @@ class JeopardyClient {
         
         // Track wager state
         this.wagerSent = false;
+        
+        // Start with buzzer disabled until host enables it
+        this.buzzButton.classList.add('host-disabled');
         
         this.init();
     }
@@ -680,6 +698,7 @@ class JeopardyClient {
         this.buzzButton.disabled = true;
         this.penaltyMessage.style.opacity = "1";
         setTimeout(() => {
+            // Re-enable button after penalty period
             this.buzzButton.disabled = false;
             this.penaltyMessage.style.opacity = "0";
         }, 3000);
@@ -744,6 +763,16 @@ class JeopardyClient {
         if (message.connected_players) {
             this.connected_players = message.connected_players;
             this.updatePlayersList();
+        }
+        
+        // Update buzzer button state based on buzz_lock
+        if (message.buzz_lock !== undefined) {
+            this.buzzLockState = message.buzz_lock;
+            if (this.buzzLockState) {
+                this.buzzButton.classList.remove('host-disabled');
+            } else {
+                this.buzzButton.classList.add('host-disabled');
+            }
         }
     }
     
@@ -819,6 +848,10 @@ class JeopardyClient {
         // Reset state variables
         this.finalAnswerSent = false;
         this.wagerSent = false;
+        this.buzzLockState = false;
+        
+        // Reset buzzer button to disabled state (host needs to re-enable)
+        this.buzzButton.classList.add('host-disabled');
         
         // Remove body classes
         document.body.classList.remove("finalJeopardy");
