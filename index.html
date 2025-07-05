@@ -185,6 +185,153 @@ body {
   }
 }
 
+/* Modal overlay system (shared styles) */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.95);
+  z-index: 1000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  opacity: 0;
+  transition: opacity 0.5s ease-out;
+}
+
+.modal-overlay.show {
+  display: flex;
+  opacity: 1;
+}
+
+.modal-overlay.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.modal-container {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 2.5rem;
+  max-width: 400px;
+  width: 100%;
+  box-shadow: 0 4px 20px rgba(255, 215, 0, 0.1);
+  border: 1px solid rgba(255, 215, 0, 0.2);
+  text-align: center;
+  animation: slideIn 0.5s ease-out;
+}
+
+.modal-title {
+  font-size: 2rem;
+  color: #FFD700;
+  margin-bottom: 0.5rem;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+.modal-subtitle {
+  font-size: 1rem;
+  color: #ccc;
+  margin-bottom: 2rem;
+}
+
+/* Wager overlay specific styles */
+.wager-overlay {
+  background-color: rgba(255, 165, 0, 0.1);
+}
+
+.wager-overlay .modal-container {
+  border: 1px solid rgba(255, 165, 0, 0.3);
+  box-shadow: 0 4px 20px rgba(255, 165, 0, 0.2);
+}
+
+.wager-overlay .modal-title {
+  color: #FF8C00;
+  text-shadow: 0 0 10px rgba(255, 140, 0, 0.5);
+}
+
+.wager-overlay .form-label {
+  color: #FF8C00;
+}
+
+.wager-overlay .form-input:focus {
+  border-color: #FF8C00;
+  box-shadow: 0 0 0 3px rgba(255, 140, 0, 0.2);
+}
+
+.wager-overlay .form-button {
+  background-color: #FF8C00;
+  color: white;
+}
+
+.wager-overlay .form-button:hover:not(:disabled) {
+  background-color: #FF7F00;
+}
+
+/* Final Jeopardy overlay specific styles */
+.final-overlay {
+  background-color: rgba(26, 26, 58, 0.95);
+}
+
+.final-overlay .modal-container {
+  background: rgba(30, 30, 70, 0.9);
+  border: 1px solid rgba(100, 149, 237, 0.4);
+  box-shadow: 0 8px 32px rgba(65, 105, 225, 0.3);
+  backdrop-filter: blur(10px);
+}
+
+.final-overlay .modal-title {
+  color: #6495ED;
+  text-shadow: 0 0 15px rgba(100, 149, 237, 0.6);
+}
+
+.final-overlay .modal-subtitle {
+  color: #B0C4DE;
+}
+
+.final-overlay .form-label {
+  color: #6495ED;
+}
+
+.final-overlay .form-input {
+  background-color: rgba(255, 255, 255, 0.15);
+  border-color: rgba(100, 149, 237, 0.4);
+}
+
+.final-overlay .form-input:focus {
+  border-color: #6495ED;
+  background-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 0 0 3px rgba(100, 149, 237, 0.3);
+}
+
+.final-overlay .form-button {
+  background-color: #6495ED;
+  color: white;
+  box-shadow: 0 4px 15px rgba(100, 149, 237, 0.4);
+}
+
+.final-overlay .form-button:hover:not(:disabled) {
+  background-color: #5A86E0;
+  box-shadow: 0 6px 20px rgba(100, 149, 237, 0.5);
+}
+
+.final-overlay .form-info {
+  color: #B0C4DE;
+}
+
+/* Mobile responsive adjustments for modals */
+@media (max-width: 768px) {
+  .modal-container {
+    padding: 2rem 1.5rem;
+  }
+  
+  .modal-title {
+    font-size: 1.5rem;
+  }
+}
+
 .header {
   position: fixed;
   top: 0;
@@ -240,8 +387,12 @@ button:hover {
 }
 
 #queue {
-  margin-bottom: 2rem;
+  margin-top: 2rem;
   text-align: center;
+  min-height: 150px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
 }
 
 #queue ul {
@@ -257,7 +408,7 @@ button:hover {
 }
 
 button:active {
-  transform: scale(0.95);
+  transform: translateY(-7px) scale(0.95);
 }
 button:disabled {
   background-color: #ddd;
@@ -292,6 +443,7 @@ button.host-disabled:hover {
   z-index: 200;
   font-weight: bold;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+  pointer-events: none;
 }
 
 @keyframes glow {
@@ -344,7 +496,7 @@ body.winning {
   display: none;
   font-size: 1.2rem;
   padding: 1rem;
-  margin-bottom: 1rem;
+  margin-top: 1rem;
   border: 2px solid #ccc;
   border-radius: 8px;
   width: 100%;
@@ -379,20 +531,11 @@ body.winning {
   transform: scale(0.95);
 }
 
-@keyframes pulseBlue {
-  0% {
-    background-color: black;
-  }
-  50% {
-    background-color: blue;
-  }
-  100% {
-    background-color: black;
-  }
-}
-
 body.finalJeopardy {
-  animation: pulseBlue 4s ease-in-out infinite;
+  background-color: #1a1a3a !important;
+  background-image: radial-gradient(circle at 20% 80%, rgba(65, 105, 225, 0.1) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 20%, rgba(100, 149, 237, 0.1) 0%, transparent 50%);
+  transition: background 1s ease-in-out;
 }
 
 .connection-indicator {
@@ -416,7 +559,7 @@ body.finalJeopardy {
   display: none;
   font-size: 1.2rem;
   padding: 1rem;
-  margin-bottom: 1rem;
+  margin-top: 1rem;
   border: 2px solid #ccc;
   border-radius: 8px;
   width: 100%;
@@ -473,7 +616,8 @@ body.finalJeopardy {
   
   #queue {
     font-size: 0.9rem;
-    margin-bottom: 1.5rem;
+    margin-top: 1.5rem;
+    min-height: 120px;
   }
   
   button {
@@ -593,18 +737,73 @@ input[type="text"]:focus, input[type="number"]:focus {
   <p id="status"></p>
 </div>
 
+<div class="wager-overlay modal-overlay" id="wagerOverlay">
+  <div class="modal-container">
+    <h1 class="modal-title">Make a Bet</h1>
+    <p class="modal-subtitle">How much do you want to wager?</p>
+    <form id="wagerForm" onsubmit="handleWager(event)">
+      <div class="form-group">
+        <label class="form-label" for="wagerAmount">Your Bet</label>
+        <input 
+          type="text" 
+          id="wagerAmount" 
+          class="form-input" 
+          placeholder="Enter amount or phrase" 
+          autocomplete="off"
+          spellcheck="false"
+        >
+        <div class="form-error" id="wagerError">Please enter a wager</div>
+      </div>
+      <button type="submit" class="form-button" id="submitWagerButton">
+        Submit Wager
+      </button>
+    </form>
+    <p class="form-info">
+      You can enter any amount like "$500" or phrase like "All In"
+    </p>
+  </div>
+</div>
+
+<div class="final-overlay modal-overlay" id="finalOverlay">
+  <div class="modal-container">
+    <h1 class="modal-title">Final Jeopardy</h1>
+    <p class="modal-subtitle">Enter your answer</p>
+    <form id="finalForm" onsubmit="handleFinalAnswer(event)">
+      <div class="form-group">
+        <label class="form-label" for="finalAnswerText">Your Answer</label>
+        <input 
+          type="text" 
+          id="finalAnswerText" 
+          class="form-input" 
+          placeholder="What is...?" 
+          autocomplete="off"
+          spellcheck="false"
+          maxlength="100"
+        >
+        <div class="form-error" id="finalError">Please enter your answer</div>
+      </div>
+      <button type="submit" class="form-button" id="submitFinalButton">
+        Submit Answer
+      </button>
+    </form>
+    <p class="form-info">
+      Think carefully - you only get one chance!
+    </p>
+  </div>
+</div>
+
 <div class="main-content">
   <p id="penalty_message">CAN'T RIG IT</p>
   <p id="sent_message" style="display: none; font-style: italic; font-size: 1.1rem; color: #4CAF50; margin-top: 1rem;">Sent!</p>
-  <div id="queue"></div>
   <button id="buzzButton" onclick="buzz()">
     BUZZ
     <div id="arrow"></div>
   </button>
-  <input type="text" id="finalAnswer" placeholder="Enter your answer...">
-  <button id="finalAnswerButton" onclick="sendFinalAnswer()">Send</button>
-  <input type="text" id="wagerInput" placeholder="Enter your wager...">
-  <button id="wagerButton" onclick="sendWager()">Submit Wager</button>
+  <div id="queue"></div>
+  <input type="text" id="finalAnswer" placeholder="Enter your answer..." style="display: none;">
+  <button id="finalAnswerButton" onclick="sendFinalAnswer()" style="display: none;">Send</button>
+  <input type="text" id="wagerInput" placeholder="Enter your wager..." style="display: none;">
+  <button id="wagerButton" onclick="sendWager()" style="display: none;">Submit Wager</button>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0"></script>
 <script>
@@ -756,6 +955,12 @@ class JeopardyClient {
         this.penaltyMessage = document.getElementById("penalty_message");
         this.connectionStatus = document.getElementById("connection_status");
         this.status = document.getElementById("status");
+        
+        // New modal elements
+        this.wagerOverlay = document.getElementById("wagerOverlay");
+        this.finalOverlay = document.getElementById("finalOverlay");
+        this.wagerAmountInput = document.getElementById("wagerAmount");
+        this.finalAnswerTextInput = document.getElementById("finalAnswerText");
         
         // Track wager state
         this.wagerSent = false;
@@ -1059,26 +1264,26 @@ class JeopardyClient {
     handlePenalty() {
         this.buzzButton.disabled = true;
         this.penaltyMessage.style.opacity = "1";
+        this.penaltyMessage.style.pointerEvents = "auto";
         setTimeout(() => {
             // Re-enable button after penalty period
             this.buzzButton.disabled = false;
             this.penaltyMessage.style.opacity = "0";
+            this.penaltyMessage.style.pointerEvents = "none";
         }, 3000);
     }
     
     startFinalJeopardy() {
         this.buzzButton.style.display = "none";
-        this.finalAnswerInput.style.display = "block";
-        this.finalAnswerButton.style.display = "block";
+        this.showFinalModal();
         document.body.classList.add("finalJeopardy");
     }
     
     requestWager() {
         if (!this.wagerSent) {
             this.buzzButton.style.display = "none";
-            this.wagerInput.style.display = "block";
-            this.wagerButton.style.display = "block";
-            this.showErrorMessage("Host is requesting Final Jeopardy wagers!");
+            this.showWagerModal();
+            this.showErrorMessage("Host is requesting Daily Double wagers!");
         }
     }
     
@@ -1215,6 +1420,10 @@ class JeopardyClient {
         this.wagerButton.style.display = "none";
         this.sentMessage.style.display = "none";
         
+        // Hide modals
+        this.hideWagerModal();
+        this.hideFinalModal();
+        
         // Reset state variables
         this.finalAnswerSent = false;
         this.wagerSent = false;
@@ -1233,6 +1442,56 @@ class JeopardyClient {
         this.wagerInput.value = "";
         
         this.showErrorMessage("Game reset by host!");
+    }
+    
+    showWagerModal() {
+        this.wagerOverlay.classList.add('show');
+        this.wagerAmountInput.focus();
+    }
+    
+    hideWagerModal() {
+        this.wagerOverlay.classList.remove('show');
+        this.resetWagerForm();
+    }
+    
+    resetWagerForm() {
+        const wagerInput = document.getElementById('wagerAmount');
+        const wagerError = document.getElementById('wagerError');
+        const submitButton = document.getElementById('submitWagerButton');
+        
+        // Reset input and error states
+        wagerInput.value = '';
+        wagerInput.disabled = false;
+        wagerError.classList.remove('show');
+        
+        // Reset button state
+        submitButton.disabled = false;
+        submitButton.textContent = 'Submit Wager';
+    }
+    
+    showFinalModal() {
+        this.finalOverlay.classList.add('show');
+        this.finalAnswerTextInput.focus();
+    }
+    
+    hideFinalModal() {
+        this.finalOverlay.classList.remove('show');
+        this.resetFinalForm();
+    }
+    
+    resetFinalForm() {
+        const finalInput = document.getElementById('finalAnswerText');
+        const finalError = document.getElementById('finalError');
+        const submitButton = document.getElementById('submitFinalButton');
+        
+        // Reset input and error states
+        finalInput.value = '';
+        finalInput.disabled = false;
+        finalError.classList.remove('show');
+        
+        // Reset button state
+        submitButton.disabled = false;
+        submitButton.textContent = 'Submit Answer';
     }
 }
 
@@ -1308,6 +1567,83 @@ window.addEventListener('connectionError', function() {
     // Show login overlay again
     loginOverlay.classList.remove('hidden');
 });
+
+// Handle wager form submission
+function handleWager(event) {
+    event.preventDefault();
+    
+    const wagerInput = document.getElementById('wagerAmount');
+    const wagerError = document.getElementById('wagerError');
+    const submitButton = document.getElementById('submitWagerButton');
+    
+    // Reset error
+    wagerError.classList.remove('show');
+    
+    // Validate input
+    const wagerAmount = wagerInput.value.trim();
+    if (!wagerAmount) {
+        wagerError.classList.add('show');
+        return;
+    }
+    
+    // Disable form while submitting
+    submitButton.disabled = true;
+    submitButton.textContent = 'Submitting...';
+    wagerInput.disabled = true;
+    
+    // Send wager
+    const success = jeopardyClient.sendMessage("WAGER:" + jeopardyClient.local_username + ":" + wagerAmount);
+    if (success) {
+        jeopardyClient.hideWagerModal();
+        jeopardyClient.buzzButton.style.display = "block";
+        jeopardyClient.wagerSent = true;
+        jeopardyClient.showErrorMessage("Wager submitted successfully!");
+    } else {
+        jeopardyClient.showErrorMessage("Failed to send wager - not connected!");
+        // Re-enable form
+        submitButton.disabled = false;
+        submitButton.textContent = 'Submit Wager';
+        wagerInput.disabled = false;
+    }
+}
+
+// Handle final answer form submission
+function handleFinalAnswer(event) {
+    event.preventDefault();
+    
+    const finalInput = document.getElementById('finalAnswerText');
+    const finalError = document.getElementById('finalError');
+    const submitButton = document.getElementById('submitFinalButton');
+    
+    // Reset error
+    finalError.classList.remove('show');
+    
+    // Validate input
+    const answer = finalInput.value.trim();
+    if (!answer) {
+        finalError.classList.add('show');
+        return;
+    }
+    
+    // Disable form while submitting
+    submitButton.disabled = true;
+    submitButton.textContent = 'Submitting...';
+    finalInput.disabled = true;
+    
+    // Send answer
+    const success = jeopardyClient.sendMessage("FINAL_ANSWER:" + jeopardyClient.local_username + ":" + answer);
+    if (success) {
+        jeopardyClient.hideFinalModal();
+        jeopardyClient.sentMessage.style.display = "block";
+        jeopardyClient.finalAnswerSent = true;
+    } else {
+        jeopardyClient.showErrorMessage("Failed to send answer - not connected!");
+        // Re-enable form
+        submitButton.disabled = false;
+        submitButton.textContent = 'Submit Answer';
+        finalInput.disabled = false;
+    }
+}
 </script>
 
 </body>
