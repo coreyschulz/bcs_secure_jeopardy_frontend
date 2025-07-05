@@ -22,6 +22,169 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
+.login-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: black;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  opacity: 1;
+  transition: opacity 0.5s ease-out;
+}
+
+.login-overlay.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.login-container {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 2.5rem;
+  max-width: 400px;
+  width: 100%;
+  box-shadow: 0 4px 20px rgba(255, 215, 0, 0.1);
+  border: 1px solid rgba(255, 215, 0, 0.2);
+  text-align: center;
+  animation: slideIn 0.5s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.login-title {
+  font-size: 2rem;
+  color: #FFD700;
+  margin-bottom: 0.5rem;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+.login-subtitle {
+  font-size: 1rem;
+  color: #ccc;
+  margin-bottom: 2rem;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+  text-align: left;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #FFD700;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.form-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 215, 0, 0.3);
+  border-radius: 8px;
+  color: white;
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+.form-input:focus {
+  border-color: #FFD700;
+  background-color: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.2);
+}
+
+.form-input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.form-button {
+  width: 100%;
+  padding: 1rem;
+  font-size: 1.1rem;
+  font-weight: bold;
+  background-color: #FFD700;
+  color: black;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(255, 215, 0, 0.3);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.form-button:hover:not(:disabled) {
+  background-color: #ffed4e;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
+}
+
+.form-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.form-button:disabled {
+  background-color: #666;
+  color: #333;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.form-error {
+  color: #ff6b6b;
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+  display: none;
+}
+
+.form-error.show {
+  display: block;
+  animation: shake 0.3s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+.form-info {
+  font-size: 0.85rem;
+  color: #888;
+  margin-top: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .login-container {
+    padding: 2rem 1.5rem;
+  }
+  
+  .login-title {
+    font-size: 1.5rem;
+  }
+  
+  .form-input {
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+}
+
 .header {
   position: fixed;
   top: 0;
@@ -385,6 +548,46 @@ input[type="text"]:focus, input[type="number"]:focus {
 </head>
 <body>
 
+<div class="login-overlay" id="loginOverlay">
+  <div class="login-container">
+    <h1 class="login-title">BCS Secure Jeopardy</h1>
+    <p class="login-subtitle">Join the game</p>
+    <form id="loginForm" onsubmit="handleLogin(event)">
+      <div class="form-group">
+        <label class="form-label" for="gameCode">Game Code</label>
+        <input 
+          type="text" 
+          id="gameCode" 
+          class="form-input" 
+          placeholder="Enter game code or server address" 
+          autocomplete="off"
+          spellcheck="false"
+        >
+        <div class="form-error" id="gameCodeError">Game code is required</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="username">Username</label>
+        <input 
+          type="text" 
+          id="username" 
+          class="form-input" 
+          placeholder="Choose your username" 
+          autocomplete="off"
+          spellcheck="false"
+          maxlength="20"
+        >
+        <div class="form-error" id="usernameError">Username is required</div>
+      </div>
+      <button type="submit" class="form-button" id="joinButton">
+        Join Game
+      </button>
+    </form>
+    <p class="form-info">
+      Tip: Share the game URL to skip entering the code
+    </p>
+  </div>
+</div>
+
 <div class="header">
   <p id="connection_status">Connecting...</p>
   <p id="status"></p>
@@ -523,6 +726,7 @@ class JeopardyClient {
         this.connectionState = 'disconnected';
         this.audioContext = null;
         this.buzzLockState = false; // Track whether buzzer is enabled by host
+        this.loginAttempted = false;
         this.initAudio();
         
         // Connected players list and fun messages
@@ -563,8 +767,20 @@ class JeopardyClient {
     }
     
     init() {
-        this.getConnectionInfo();
-        this.connect();
+        // Check URL parameters and pre-populate form
+        const urlParams = new URLSearchParams(window.location.search);
+        const codeFromUrl = urlParams.get('code');
+        
+        if (codeFromUrl) {
+            document.getElementById('gameCode').value = codeFromUrl;
+        }
+        
+        // Focus on the appropriate field
+        if (codeFromUrl) {
+            document.getElementById('username').focus();
+        } else {
+            document.getElementById('gameCode').focus();
+        }
     }
     
     initAudio() {
@@ -637,33 +853,11 @@ class JeopardyClient {
         }
     }
     
-    getConnectionInfo() {
-        if (!this.server) {
-            // Check URL parameters for game code
-            const urlParams = new URLSearchParams(window.location.search);
-            const codeFromUrl = urlParams.get('code');
-            
-            if (codeFromUrl) {
-                this.server = codeFromUrl;
-            } else {
-                this.server = window.prompt("Please enter your game code:");
-                if (!this.server) {
-                    alert("Game Code or server address is required!");
-                    this.getConnectionInfo();
-                    return;
-                }
-            }
-        }
-        
-        if (!this.local_username) {
-            this.local_username = window.prompt("Please enter your username:");
-            if (!this.local_username || this.local_username.trim() === "") {
-                alert("Username is required!");
-                this.getConnectionInfo();
-                return;
-            }
-            this.local_username = this.local_username.trim();
-        }
+    startConnection(gameCode, username) {
+        this.server = gameCode;
+        this.local_username = username.trim();
+        this.loginAttempted = true;
+        this.connect();
     }
     
     connect() {
@@ -710,6 +904,12 @@ class JeopardyClient {
         this.connectionState = 'connected';
         this.reconnectAttempts = 0;
         this.reconnectDelay = 1000;
+        
+        // Hide login overlay
+        const loginOverlay = document.getElementById('loginOverlay');
+        if (loginOverlay) {
+            loginOverlay.classList.add('hidden');
+        }
         
         // Send username
         this.sendMessage(this.local_username);
@@ -762,8 +962,14 @@ class JeopardyClient {
     
     onError(error) {
         console.error("WebSocket error:", error);
-        this.showErrorMessage("Connection error. Attempting to reconnect...");
+        this.showErrorMessage("Connection error. Please check your game code.");
         this.updateConnectionStatus("Connection Error", "red");
+        
+        // Dispatch event if this is the first connection attempt
+        if (this.loginAttempted && !this.connectionState === 'connected') {
+            window.dispatchEvent(new Event('connectionError'));
+            this.loginAttempted = false;
+        }
     }
     
     attemptReconnect() {
@@ -1045,6 +1251,63 @@ function sendFinalAnswer() {
 function sendWager() {
     jeopardyClient.sendWager();
 }
+
+function handleLogin(event) {
+    event.preventDefault();
+    
+    const gameCodeInput = document.getElementById('gameCode');
+    const usernameInput = document.getElementById('username');
+    const gameCodeError = document.getElementById('gameCodeError');
+    const usernameError = document.getElementById('usernameError');
+    const joinButton = document.getElementById('joinButton');
+    
+    // Reset errors
+    gameCodeError.classList.remove('show');
+    usernameError.classList.remove('show');
+    
+    // Validate inputs
+    let hasError = false;
+    
+    if (!gameCodeInput.value.trim()) {
+        gameCodeError.classList.add('show');
+        hasError = true;
+    }
+    
+    if (!usernameInput.value.trim()) {
+        usernameError.classList.add('show');
+        hasError = true;
+    }
+    
+    if (hasError) {
+        return;
+    }
+    
+    // Disable form while connecting
+    joinButton.disabled = true;
+    joinButton.textContent = 'Connecting...';
+    gameCodeInput.disabled = true;
+    usernameInput.disabled = true;
+    
+    // Start connection
+    jeopardyClient.startConnection(gameCodeInput.value.trim(), usernameInput.value.trim());
+}
+
+// Handle connection errors by re-enabling the form
+window.addEventListener('connectionError', function() {
+    const gameCodeInput = document.getElementById('gameCode');
+    const usernameInput = document.getElementById('username');
+    const joinButton = document.getElementById('joinButton');
+    const loginOverlay = document.getElementById('loginOverlay');
+    
+    // Re-enable form
+    joinButton.disabled = false;
+    joinButton.textContent = 'Join Game';
+    gameCodeInput.disabled = false;
+    usernameInput.disabled = false;
+    
+    // Show login overlay again
+    loginOverlay.classList.remove('hidden');
+});
 </script>
 
 </body>
