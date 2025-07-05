@@ -46,7 +46,7 @@ This is a client-side web application for "BCS Secure Jeopardy" - a game show bu
 - Real-time buzzer with audio feedback
 - Visual indicators for buzz-in status (first in queue glows red)
 - Final Jeopardy answer submission
-- Wager submission for Daily Double scenarios
+- Wager submission
 - Penalty timeout system
 - Mobile-responsive design
 
