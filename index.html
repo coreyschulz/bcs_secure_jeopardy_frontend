@@ -33,9 +33,16 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1rem;
+  /* Safe area padding for devices with notches/rounded corners */
+  padding: env(safe-area-inset-top, 1rem) env(safe-area-inset-right, 1rem) env(safe-area-inset-bottom, 1rem) env(safe-area-inset-left, 1rem);
   opacity: 1;
   transition: opacity 0.5s ease-out;
+  /* Enable scrolling for small viewports */
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  /* Custom viewport height to handle mobile browser chrome */
+  height: 100vh;
+  height: calc(var(--vh, 1vh) * 100);
 }
 
 .login-overlay.hidden {
@@ -53,6 +60,11 @@ body {
   border: 1px solid rgba(255, 215, 0, 0.2);
   text-align: center;
   animation: slideIn 0.5s ease-out;
+  /* Better centering and height constraints */
+  margin: auto;
+  max-height: calc(100vh - 2rem);
+  max-height: calc(var(--vh, 1vh) * 100 - env(safe-area-inset-top, 1rem) - env(safe-area-inset-bottom, 1rem) - 2rem);
+  overflow: visible;
 }
 
 .login-logo {
@@ -191,8 +203,17 @@ body {
 }
 
 @media (max-width: 768px) {
+  .login-overlay {
+    /* Align to top on mobile for better keyboard handling */
+    align-items: flex-start;
+    padding-top: max(env(safe-area-inset-top, 1rem), 2rem);
+  }
+  
   .login-container {
     padding: 2rem 1.5rem;
+    margin-top: 1rem;
+    /* Account for safe areas and ensure content fits */
+    max-height: calc(var(--vh, 1vh) * 100 - max(env(safe-area-inset-top, 1rem), 2rem) - env(safe-area-inset-bottom, 1rem) - 2rem);
   }
   
   .login-logo {
@@ -205,6 +226,86 @@ body {
   
   .form-input {
     font-size: 16px; /* Prevents zoom on iOS */
+  }
+  
+  .form-info {
+    margin-bottom: 0.5rem;
+  }
+}
+
+/* Landscape mode optimizations for small heights */
+@media (max-width: 768px) and (max-height: 700px) {
+  .login-logo {
+    width: 120px;
+    margin-bottom: 1.5rem;
+  }
+  
+  .login-title {
+    font-size: 1.25rem;
+    margin-bottom: 0.25rem;
+  }
+  
+  .login-subtitle {
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .form-group {
+    margin-bottom: 1.25rem;
+  }
+  
+  .form-info {
+    font-size: 0.8rem;
+    margin-top: 1rem;
+  }
+}
+
+/* Additional landscape handling for very small heights */
+@media (max-height: 500px) {
+  .login-overlay {
+    align-items: flex-start;
+    padding-top: 1rem;
+  }
+  
+  .login-container {
+    margin-top: 0.5rem;
+  }
+  
+  .login-logo {
+    width: 100px;
+    margin-bottom: 1rem;
+  }
+  
+  .login-title {
+    font-size: 1.2rem;
+  }
+  
+  .login-subtitle {
+    margin-bottom: 1rem;
+  }
+  
+  .form-group {
+    margin-bottom: 1rem;
+  }
+}
+
+/* iOS specific keyboard handling */
+@supports (-webkit-touch-callout: none) {
+  /* Using :has() selector with fallback for browsers that don't support it */
+  @supports selector(:has(*)) {
+    .login-overlay:has(.form-input:focus) {
+      align-items: flex-start;
+      padding-top: 1rem;
+    }
+    
+    .login-container:has(.form-input:focus) {
+      transform: translateY(0);
+    }
+  }
+  
+  /* iOS-specific fixes for viewport and safe areas */
+  .login-overlay {
+    min-height: -webkit-fill-available;
   }
 }
 
@@ -951,6 +1052,7 @@ class JeopardyClient {
         this.buzzLockState = false; // Track whether buzzer is enabled by host
         this.loginAttempted = false;
         this.initAudio();
+        this.initViewportHeight();
         
         // Connected players list and fun messages
         this.connected_players = [];
@@ -1026,6 +1128,64 @@ class JeopardyClient {
         } catch (e) {
             console.log("Web Audio API not supported");
         }
+    }
+    
+    initViewportHeight() {
+        // Function to set custom viewport height property
+        const setViewportHeight = () => {
+            const vh = window.innerHeight * 0.01;
+            document.documentElement.style.setProperty('--vh', `${vh}px`);
+        };
+        
+        // Set initial viewport height
+        setViewportHeight();
+        
+        // Update on resize and orientation change
+        window.addEventListener('resize', setViewportHeight);
+        window.addEventListener('orientationchange', setViewportHeight);
+        
+        // Debounce function to limit how often viewport height is updated
+        let resizeTimeout;
+        const debouncedSetViewportHeight = () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(setViewportHeight, 100);
+        };
+        
+        // Handle visual viewport changes (better for mobile keyboards)
+        if ('visualViewport' in window) {
+            window.visualViewport.addEventListener('resize', debouncedSetViewportHeight);
+        }
+        
+        // Also update when keyboard might appear/disappear
+        const inputs = document.querySelectorAll('input[type="text"], input[type="number"]');
+        inputs.forEach(input => {
+            input.addEventListener('focus', () => {
+                setTimeout(setViewportHeight, 300); // Delay to allow keyboard animation
+                // Fallback for browsers without :has() support
+                if (window.innerWidth <= 768) {
+                    const loginOverlay = document.querySelector('.login-overlay');
+                    if (loginOverlay) {
+                        loginOverlay.style.alignItems = 'flex-start';
+                        loginOverlay.style.paddingTop = '1rem';
+                    }
+                    // Ensure the input is scrolled into view
+                    setTimeout(() => {
+                        input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }, 400);
+                }
+            });
+            input.addEventListener('blur', () => {
+                setTimeout(setViewportHeight, 300);
+                // Reset alignment when keyboard closes
+                if (window.innerWidth <= 768) {
+                    const loginOverlay = document.querySelector('.login-overlay');
+                    if (loginOverlay) {
+                        loginOverlay.style.alignItems = '';
+                        loginOverlay.style.paddingTop = '';
+                    }
+                }
+            });
+        });
     }
     
     playBuzzerSound() {
