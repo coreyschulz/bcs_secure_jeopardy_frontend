@@ -33,9 +33,19 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            /* Responsive padding with safe area support */
             padding: 1rem;
+            padding: env(safe-area-inset-top, 1rem) env(safe-area-inset-right, 1rem) env(safe-area-inset-bottom, 1rem) env(safe-area-inset-left, 1rem);
             opacity: 1;
             transition: opacity 0.5s ease-out;
+            /* Handle overflow for small viewports */
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            /* Custom viewport height for mobile browsers */
+            height: 100vh;
+            height: calc(var(--vh, 1vh) * 100);
+            /* iOS-specific viewport fix */
+            min-height: -webkit-fill-available;
         }
         
         .login-overlay.hidden {
@@ -53,6 +63,14 @@
             border: 1px solid rgba(255, 215, 0, 0.2);
             text-align: center;
             animation: slideIn 0.5s ease-out;
+            /* Better vertical centering and height constraints */
+            margin: auto;
+            max-height: calc(100vh - 2rem);
+            max-height: calc(var(--vh, 1vh) * 100 - 2rem);
+            /* Account for safe areas on mobile */
+            max-height: calc(100vh - env(safe-area-inset-top, 1rem) - env(safe-area-inset-bottom, 1rem) - 2rem);
+            max-height: calc(var(--vh, 1vh) * 100 - env(safe-area-inset-top, 1rem) - env(safe-area-inset-bottom, 1rem) - 2rem);
+            overflow: visible;
         }
         
         .login-logo {
@@ -534,8 +552,35 @@
         
         /* Mobile-specific adjustments */
         @media (max-width: 768px) {
+            .login-overlay {
+                /* Align to top on mobile to prevent centering issues */
+                align-items: flex-start;
+                padding-top: max(env(safe-area-inset-top, 1rem), 2rem);
+            }
+            
+            .login-container {
+                padding: 2rem 1.5rem;
+                margin-top: 1rem;
+                /* Recalculate max-height for mobile */
+                max-height: calc(100vh - max(env(safe-area-inset-top, 1rem), 2rem) - env(safe-area-inset-bottom, 1rem) - 2rem);
+                max-height: calc(var(--vh, 1vh) * 100 - max(env(safe-area-inset-top, 1rem), 2rem) - env(safe-area-inset-bottom, 1rem) - 2rem);
+            }
+            
             .login-logo {
                 width: 140px;
+            }
+            
+            .login-title {
+                font-size: 1.5rem;
+            }
+            
+            .form-info {
+                margin-bottom: 0.5rem;
+            }
+            
+            .form-input {
+                /* Prevent iOS zoom on focus */
+                font-size: 16px;
             }
             
             .header {
@@ -633,6 +678,70 @@
             appearance: none;
         }
         
+        /* Landscape mode optimizations */
+        @media (max-width: 768px) and (max-height: 700px) {
+            .login-logo {
+                width: 120px;
+                margin-bottom: 1.5rem;
+            }
+            
+            .login-title {
+                font-size: 1.25rem;
+                margin-bottom: 0.25rem;
+            }
+            
+            .login-subtitle {
+                font-size: 0.9rem;
+                margin-bottom: 1.5rem;
+            }
+            
+            .form-group {
+                margin-bottom: 1.25rem;
+            }
+            
+            .form-info {
+                font-size: 0.8rem;
+                margin-top: 1rem;
+            }
+        }
+        
+        /* Very small devices in landscape */
+        @media (max-width: 768px) and (max-height: 500px) {
+            .login-container {
+                padding: 1.5rem 1.25rem;
+            }
+            
+            .login-logo {
+                display: none;
+            }
+            
+            .host-badge {
+                margin-bottom: 0.5rem;
+            }
+            
+            .login-title {
+                font-size: 1.2rem;
+            }
+            
+            .form-group {
+                margin-bottom: 1rem;
+            }
+        }
+        
+        /* iOS keyboard handling with :has() selector */
+        @supports selector(:has(*)) {
+            @media (max-width: 768px) {
+                .login-overlay:has(.form-input:focus) {
+                    align-items: flex-start;
+                    padding-top: 1rem;
+                }
+                
+                .login-container:has(.form-input:focus) {
+                    transform: translateY(0);
+                }
+            }
+        }
+        
         /* Prevent zoom on input focus on iOS */
         @media (max-width: 768px) {
             input {
@@ -690,9 +799,6 @@
                     Connect as Host
                 </button>
             </form>
-            <p class="form-info">
-                As host, you'll control the game flow and scoring
-            </p>
         </div>
     </div>
     
@@ -1228,8 +1334,66 @@
         // Initialize the host when DOM is ready
         let jeopardyHost;
         
+        // Initialize viewport height for mobile browsers
+        function initViewportHeight() {
+            // Set custom viewport height property
+            const setVh = () => {
+                const vh = window.innerHeight * 0.01;
+                document.documentElement.style.setProperty('--vh', `${vh}px`);
+            };
+            
+            // Initial set
+            setVh();
+            
+            // Debounce function for resize events
+            let resizeTimeout;
+            const debouncedSetVh = () => {
+                clearTimeout(resizeTimeout);
+                resizeTimeout = setTimeout(setVh, 100);
+            };
+            
+            // Update on resize and orientation change
+            window.addEventListener('resize', debouncedSetVh);
+            window.addEventListener('orientationchange', setVh);
+            
+            // Handle visual viewport changes (keyboard show/hide)
+            if ('visualViewport' in window) {
+                window.visualViewport.addEventListener('resize', debouncedSetVh);
+            }
+            
+            // iOS keyboard handling for browsers without :has() support
+            const inputs = document.querySelectorAll('.form-input');
+            const loginOverlay = document.querySelector('.login-overlay');
+            const loginContainer = document.querySelector('.login-container');
+            
+            if (!CSS.supports('selector(:has(*))')) {
+                inputs.forEach(input => {
+                    input.addEventListener('focus', () => {
+                        if (window.innerWidth <= 768) {
+                            loginOverlay.style.alignItems = 'flex-start';
+                            loginOverlay.style.paddingTop = '1rem';
+                            loginContainer.style.transform = 'translateY(0)';
+                            // Ensure input is visible
+                            setTimeout(() => {
+                                input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            }, 300);
+                        }
+                    });
+                    
+                    input.addEventListener('blur', () => {
+                        if (window.innerWidth <= 768) {
+                            loginOverlay.style.alignItems = '';
+                            loginOverlay.style.paddingTop = '';
+                            loginContainer.style.transform = '';
+                        }
+                    });
+                });
+            }
+        }
+        
         function initializeHost() {
             jeopardyHost = new JeopardyHost();
+            initViewportHeight();
         }
         
         if (document.readyState === 'loading') {
