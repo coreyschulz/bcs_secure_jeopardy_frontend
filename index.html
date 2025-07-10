@@ -1647,7 +1647,7 @@ class DrawingCanvas {
     async getCompressedImage() {
         // Create a temporary canvas for compression
         const tempCanvas = document.createElement('canvas');
-        const maxDimension = 1024;
+        const maxDimension = 400; // Reduced from 1024 to keep size small
         const scale = Math.min(1, maxDimension / Math.max(this.canvas.width, this.canvas.height));
         
         tempCanvas.width = this.canvas.width * scale;
@@ -1658,12 +1658,8 @@ class DrawingCanvas {
         tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
         tempCtx.drawImage(this.canvas, 0, 0, tempCanvas.width, tempCanvas.height);
         
-        // Try WebP format first, fallback to PNG if not supported
-        let dataUrl = tempCanvas.toDataURL('image/webp', 0.8);
-        if (dataUrl.indexOf('image/webp') === -1) {
-            // WebP not supported, use PNG
-            dataUrl = tempCanvas.toDataURL('image/png', 0.8);
-        }
+        // Use JPEG for much better compression
+        let dataUrl = tempCanvas.toDataURL('image/jpeg', 0.5); // Lower quality for smaller size
         
         return dataUrl;
     }
@@ -1934,9 +1930,10 @@ class JeopardyClient {
             // Ensure server URL doesn't have protocol prefix if user included it
             let serverUrl = this.server.replace(/^(ws|wss|https?):\/\//, '');
             
-            // Check if input is just an ngrok ID (format: xxxx-xxx-xxx-xxx-xxx)
-            const ngrokPattern = /^[a-f0-9]{4}-\d{1,3}-\d{1,3}-\d{1,3}-\d{1,3}$/;
-            if (ngrokPattern.test(serverUrl)) {
+            // Check if input is just an ngrok ID (old format: xxxx-xxx-xxx-xxx-xxx, new format: 12 hex chars)
+            const ngrokPatternOld = /^[a-f0-9]{4}-\d{1,3}-\d{1,3}-\d{1,3}-\d{1,3}$/;
+            const ngrokPatternNew = /^[a-f0-9]{12}$/;
+            if (ngrokPatternOld.test(serverUrl) || ngrokPatternNew.test(serverUrl)) {
                 // Auto-format as ngrok URL
                 serverUrl = serverUrl + '.ngrok-free.app';
             }
@@ -2363,15 +2360,11 @@ class JeopardyClient {
             // Get compressed image
             const imageData = await this.drawingCanvas.getCompressedImage();
             
-            // Get drawing data (paths)
-            const drawingData = this.drawingCanvas.getDrawingData();
-            
-            // Create submission object
+            // Create submission object (without path data to reduce size)
             const submission = {
                 username: this.local_username,
                 timestamp: Date.now(),
-                imageData: imageData,
-                drawingData: drawingData
+                imageData: imageData
             };
             
             // Send to server

@@ -1217,9 +1217,10 @@
                     // Ensure server URL doesn't have protocol prefix if user included it
                     let serverUrl = this.server.replace(/^(ws|wss|https?):\/\//, '');
                     
-                    // Check if input is just an ngrok ID (format: xxxx-xxx-xxx-xxx-xxx)
-                    const ngrokPattern = /^[a-f0-9]{4}-\d{1,3}-\d{1,3}-\d{1,3}-\d{1,3}$/;
-                    if (ngrokPattern.test(serverUrl)) {
+                    // Check if input is just an ngrok ID (old format: xxxx-xxx-xxx-xxx-xxx, new format: 12 hex chars)
+                    const ngrokPatternOld = /^[a-f0-9]{4}-\d{1,3}-\d{1,3}-\d{1,3}-\d{1,3}$/;
+                    const ngrokPatternNew = /^[a-f0-9]{12}$/;
+                    if (ngrokPatternOld.test(serverUrl) || ngrokPatternNew.test(serverUrl)) {
                         // Auto-format as ngrok URL
                         serverUrl = serverUrl + '.ngrok-free.app';
                     }
