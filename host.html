@@ -770,7 +770,8 @@
         /* Hide sections that don't have content */
         .queue-section:not(:has(li)),
         .final-answers-section:not(:has(li)),
-        .wagers-section:not(:has(li)) {
+        .wagers-section:not(:has(li)),
+        .drawings-section:not(:has(.drawing-item)) {
             display: none;
         }
         
@@ -994,7 +995,7 @@
             <div id="finalAnswers"></div>
         </div>
         
-        <div class="drawings-section" id="drawingsSection" style="display: none;">
+        <div class="drawings-section" id="drawingsSection">
             <h3 class="section-title">Player Drawings</h3>
             <div id="drawingsGrid" class="drawings-grid"></div>
             <button id="clearDrawingsButton" class="secondary-button" onclick="clearDrawings()" style="display: none;">Clear All Drawings</button>
@@ -1520,11 +1521,8 @@
                 if (success) {
                     this.updateDrawingModeButton();
                     if (this.drawingMode) {
-                        this.drawingsSectionDiv.style.display = "block";
                         this.toggleSwitch.checked = false; // Turn off buzzer
                         this.sendMessage("LOCK");
-                    } else {
-                        // Keep drawings visible after mode ends
                     }
                 }
                 return success;
@@ -1598,6 +1596,8 @@
                 this.drawings = [];
                 this.drawingsGridDiv.innerHTML = "";
                 document.getElementById("clearDrawingsButton").style.display = "none";
+                // Notify all clients to clear their drawings
+                this.sendMessage("CLEAR_DRAWINGS");
             }
         }
         
