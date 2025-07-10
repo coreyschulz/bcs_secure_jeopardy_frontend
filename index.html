@@ -812,6 +812,344 @@ input[type="text"]:focus, input[type="number"]:focus {
   padding: 0.75rem 1.5rem;
 }
 
+/* Drawing mode styles */
+.drawing-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.95);
+  z-index: 1100;
+  display: none;
+  opacity: 0;
+  transition: opacity 0.3s ease-out;
+}
+
+.drawing-overlay.show {
+  display: block;
+  opacity: 1;
+}
+
+.drawing-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  padding: env(safe-area-inset-top, 1rem) env(safe-area-inset-right, 1rem) env(safe-area-inset-bottom, 1rem) env(safe-area-inset-left, 1rem);
+}
+
+.drawing-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  margin-bottom: 0.5rem;
+}
+
+.drawing-title {
+  font-size: 1.5rem;
+  color: #FFD700;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+.drawing-close-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.2s;
+}
+
+.drawing-close-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.05);
+}
+
+.drawing-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-height: 0;
+}
+
+.canvas-wrapper {
+  position: relative;
+  flex: 1;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  min-height: 300px;
+}
+
+#drawingCanvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  cursor: crosshair;
+  touch-action: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.drawing-toolbar {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 1rem;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.toolbar-section {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.toolbar-label {
+  color: #FFD700;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-right: 0.5rem;
+}
+
+.color-picker {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.color-option {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 3px solid transparent;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.color-option:hover {
+  transform: scale(1.1);
+}
+
+.color-option.selected {
+  border-color: #FFD700;
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+.color-option.selected::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 8px;
+  height: 8px;
+  background: white;
+  border-radius: 50%;
+}
+
+.brush-sizes {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.brush-size {
+  padding: 0.5rem 0.75rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.9rem;
+}
+
+.brush-size:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.brush-size.selected {
+  background: #FFD700;
+  color: black;
+  border-color: #FFD700;
+}
+
+.tool-buttons {
+  display: flex;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+.tool-button {
+  padding: 0.5rem 1rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.tool-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+.tool-button.eraser {
+  border-color: rgba(255, 100, 100, 0.5);
+}
+
+.tool-button.eraser.selected {
+  background: #ff6464;
+  color: white;
+  border-color: #ff6464;
+}
+
+.tool-button.clear {
+  border-color: rgba(255, 165, 0, 0.5);
+}
+
+.tool-button.clear:hover {
+  background: rgba(255, 165, 0, 0.2);
+}
+
+.tool-button.submit {
+  background: #22c55e;
+  border-color: #22c55e;
+  color: white;
+  padding: 0.5rem 1.5rem;
+}
+
+.tool-button.submit:hover {
+  background: #16a34a;
+}
+
+/* Mobile adjustments for drawing */
+@media (max-width: 768px) {
+  .drawing-header {
+    padding: 0.25rem 0;
+  }
+  
+  .drawing-title {
+    font-size: 1.2rem;
+  }
+  
+  .drawing-toolbar {
+    padding: 0.75rem;
+    gap: 0.75rem;
+  }
+  
+  .color-option {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .toolbar-label {
+    font-size: 0.85rem;
+  }
+  
+  .brush-size, .tool-button {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.85rem;
+  }
+  
+  .tool-buttons {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+
+/* Landscape mode for drawing */
+@media (max-width: 900px) and (orientation: landscape) {
+  .drawing-container {
+    flex-direction: row;
+  }
+  
+  .drawing-header {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    z-index: 10;
+  }
+  
+  .drawing-main {
+    flex-direction: row-reverse;
+    width: 100%;
+  }
+  
+  .canvas-wrapper {
+    flex: 1;
+  }
+  
+  .drawing-toolbar {
+    flex: 0 0 auto;
+    flex-direction: column;
+    width: auto;
+    max-width: 200px;
+  }
+  
+  .toolbar-section {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .color-picker {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .tool-buttons {
+    flex-direction: column;
+    width: 100%;
+    margin-left: 0;
+    margin-top: auto;
+  }
+}
+
+/* Canvas cursor styles */
+.canvas-wrapper.eraser-mode #drawingCanvas {
+  cursor: grab;
+}
+
+.canvas-wrapper.drawing #drawingCanvas {
+  cursor: crosshair;
+}
+
+/* Loading state for drawing submission */
+.drawing-overlay.submitting .tool-button.submit {
+  background: #666;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.drawing-overlay.submitting .tool-button.submit::after {
+  content: '...';
+  animation: ellipsis 1.5s infinite;
+}
+
+@keyframes ellipsis {
+  0% { content: '.'; }
+  33% { content: '..'; }
+  66% { content: '...'; }
+}
+
 </style>
 </head>
 <body>
@@ -911,6 +1249,48 @@ input[type="text"]:focus, input[type="number"]:focus {
     <p class="form-info">
       Think carefully - you only get one chance!
     </p>
+  </div>
+</div>
+
+<div class="drawing-overlay" id="drawingOverlay">
+  <div class="drawing-container">
+    <div class="drawing-header">
+      <h2 class="drawing-title">Draw Your Answer!</h2>
+      <button class="drawing-close-btn" onclick="closeDrawing()">Close</button>
+    </div>
+    <div class="drawing-main">
+      <div class="canvas-wrapper">
+        <canvas id="drawingCanvas"></canvas>
+      </div>
+      <div class="drawing-toolbar">
+        <div class="toolbar-section">
+          <span class="toolbar-label">Color:</span>
+          <div class="color-picker">
+            <div class="color-option selected" style="background-color: #000000" data-color="#000000"></div>
+            <div class="color-option" style="background-color: #FF0000" data-color="#FF0000"></div>
+            <div class="color-option" style="background-color: #00FF00" data-color="#00FF00"></div>
+            <div class="color-option" style="background-color: #0000FF" data-color="#0000FF"></div>
+            <div class="color-option" style="background-color: #FFD700" data-color="#FFD700"></div>
+            <div class="color-option" style="background-color: #FF00FF" data-color="#FF00FF"></div>
+            <div class="color-option" style="background-color: #00FFFF" data-color="#00FFFF"></div>
+            <div class="color-option" style="background-color: #FFFFFF" data-color="#FFFFFF"></div>
+          </div>
+        </div>
+        <div class="toolbar-section">
+          <span class="toolbar-label">Size:</span>
+          <div class="brush-sizes">
+            <button class="brush-size" data-size="3">S</button>
+            <button class="brush-size selected" data-size="5">M</button>
+            <button class="brush-size" data-size="10">L</button>
+          </div>
+        </div>
+        <div class="tool-buttons">
+          <button class="tool-button eraser" onclick="toggleEraser()">Eraser</button>
+          <button class="tool-button clear" onclick="clearCanvas()">Clear</button>
+          <button class="tool-button submit" onclick="submitDrawing()">Submit</button>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -1034,6 +1414,269 @@ input[type="text"]:focus, input[type="number"]:focus {
 })();
 </script>
 <script>
+// Drawing Canvas Implementation
+class DrawingCanvas {
+    constructor(canvasElement) {
+        this.canvas = canvasElement;
+        this.ctx = this.canvas.getContext('2d');
+        this.isDrawing = false;
+        this.currentPath = [];
+        this.paths = [];
+        this.currentColor = '#000000';
+        this.currentWidth = 5;
+        this.isEraser = false;
+        
+        // Set canvas size
+        this.resizeCanvas();
+        window.addEventListener('resize', () => this.resizeCanvas());
+        
+        // Setup event listeners
+        this.setupEventListeners();
+        
+        // Path compression settings
+        this.compressionTolerance = 2; // pixels
+        this.lastUpdateTime = 0;
+        this.updateInterval = 33; // ~30fps
+    }
+    
+    resizeCanvas() {
+        const rect = this.canvas.parentElement.getBoundingClientRect();
+        const dpr = window.devicePixelRatio || 1;
+        
+        // Set display size (CSS pixels)
+        this.canvas.style.width = rect.width + 'px';
+        this.canvas.style.height = rect.height + 'px';
+        
+        // Set actual size in memory (scaled for device pixel ratio)
+        this.canvas.width = rect.width * dpr;
+        this.canvas.height = rect.height * dpr;
+        
+        // Scale drawing context to match device pixel ratio
+        this.ctx.scale(dpr, dpr);
+        
+        // Redraw existing paths
+        this.redrawCanvas();
+    }
+    
+    setupEventListeners() {
+        // Mouse events
+        this.canvas.addEventListener('mousedown', (e) => this.handleStart(e));
+        this.canvas.addEventListener('mousemove', (e) => this.handleMove(e));
+        this.canvas.addEventListener('mouseup', () => this.handleEnd());
+        this.canvas.addEventListener('mouseleave', () => this.handleEnd());
+        
+        // Touch events
+        this.canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            this.handleStart(e.touches[0]);
+        }, { passive: false });
+        
+        this.canvas.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            this.handleMove(e.touches[0]);
+        }, { passive: false });
+        
+        this.canvas.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            this.handleEnd();
+        });
+    }
+    
+    handleStart(event) {
+        this.isDrawing = true;
+        const point = this.getPointFromEvent(event);
+        this.currentPath = [point];
+        
+        // Start drawing immediately
+        this.ctx.beginPath();
+        this.ctx.moveTo(point.x * this.canvas.parentElement.offsetWidth, 
+                        point.y * this.canvas.parentElement.offsetHeight);
+    }
+    
+    handleMove(event) {
+        if (!this.isDrawing) return;
+        
+        const point = this.getPointFromEvent(event);
+        this.currentPath.push(point);
+        
+        // Draw immediately for smooth feedback
+        const scaledX = point.x * this.canvas.parentElement.offsetWidth;
+        const scaledY = point.y * this.canvas.parentElement.offsetHeight;
+        
+        this.ctx.lineTo(scaledX, scaledY);
+        this.ctx.strokeStyle = this.isEraser ? '#FFFFFF' : this.currentColor;
+        this.ctx.lineWidth = this.currentWidth;
+        this.ctx.lineCap = 'round';
+        this.ctx.lineJoin = 'round';
+        this.ctx.stroke();
+        
+        // Throttle network updates
+        const now = Date.now();
+        if (now - this.lastUpdateTime > this.updateInterval) {
+            this.sendPathUpdate();
+            this.lastUpdateTime = now;
+        }
+    }
+    
+    handleEnd() {
+        if (!this.isDrawing) return;
+        this.isDrawing = false;
+        
+        if (this.currentPath.length > 0) {
+            // Compress path before storing
+            const compressedPath = this.compressPath(this.currentPath);
+            this.paths.push({
+                points: compressedPath,
+                color: this.isEraser ? '#FFFFFF' : this.currentColor,
+                width: this.currentWidth
+            });
+            
+            // Send final path update
+            this.sendPathUpdate();
+            this.currentPath = [];
+        }
+    }
+    
+    getPointFromEvent(event) {
+        const rect = this.canvas.getBoundingClientRect();
+        return {
+            x: (event.clientX - rect.left) / rect.width,
+            y: (event.clientY - rect.top) / rect.height
+        };
+    }
+    
+    compressPath(points) {
+        if (points.length < 3) return points;
+        
+        // Douglas-Peucker algorithm for path simplification
+        const simplified = this.douglasPeucker(points, this.compressionTolerance / Math.max(this.canvas.width, this.canvas.height));
+        return simplified;
+    }
+    
+    douglasPeucker(points, tolerance) {
+        if (points.length <= 2) return points;
+        
+        let maxDistance = 0;
+        let maxIndex = 0;
+        
+        // Find point with maximum distance from line
+        for (let i = 1; i < points.length - 1; i++) {
+            const distance = this.perpendicularDistance(points[i], points[0], points[points.length - 1]);
+            if (distance > maxDistance) {
+                maxDistance = distance;
+                maxIndex = i;
+            }
+        }
+        
+        // If max distance is greater than tolerance, recursively simplify
+        if (maxDistance > tolerance) {
+            const left = this.douglasPeucker(points.slice(0, maxIndex + 1), tolerance);
+            const right = this.douglasPeucker(points.slice(maxIndex), tolerance);
+            return left.slice(0, -1).concat(right);
+        } else {
+            return [points[0], points[points.length - 1]];
+        }
+    }
+    
+    perpendicularDistance(point, lineStart, lineEnd) {
+        const dx = lineEnd.x - lineStart.x;
+        const dy = lineEnd.y - lineStart.y;
+        
+        if (dx === 0 && dy === 0) {
+            return Math.sqrt(Math.pow(point.x - lineStart.x, 2) + Math.pow(point.y - lineStart.y, 2));
+        }
+        
+        const normalLength = Math.sqrt(dx * dx + dy * dy);
+        return Math.abs((point.x - lineStart.x) * dy - (point.y - lineStart.y) * dx) / normalLength;
+    }
+    
+    sendPathUpdate() {
+        if (this.onPathUpdate && this.currentPath.length > 0) {
+            const pathData = {
+                type: 'path',
+                color: this.isEraser ? '#FFFFFF' : this.currentColor,
+                width: this.currentWidth,
+                points: this.compressPath(this.currentPath)
+            };
+            this.onPathUpdate(pathData);
+        }
+    }
+    
+    setColor(color) {
+        this.currentColor = color;
+        this.isEraser = false;
+    }
+    
+    setBrushSize(size) {
+        this.currentWidth = parseInt(size);
+    }
+    
+    toggleEraser() {
+        this.isEraser = !this.isEraser;
+        return this.isEraser;
+    }
+    
+    clear() {
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.paths = [];
+    }
+    
+    redrawCanvas() {
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        
+        const scaleX = this.canvas.parentElement.offsetWidth;
+        const scaleY = this.canvas.parentElement.offsetHeight;
+        
+        for (const path of this.paths) {
+            if (path.points.length < 2) continue;
+            
+            this.ctx.beginPath();
+            this.ctx.strokeStyle = path.color;
+            this.ctx.lineWidth = path.width;
+            this.ctx.lineCap = 'round';
+            this.ctx.lineJoin = 'round';
+            
+            this.ctx.moveTo(path.points[0].x * scaleX, path.points[0].y * scaleY);
+            for (let i = 1; i < path.points.length; i++) {
+                this.ctx.lineTo(path.points[i].x * scaleX, path.points[i].y * scaleY);
+            }
+            this.ctx.stroke();
+        }
+    }
+    
+    async getCompressedImage() {
+        // Create a temporary canvas for compression
+        const tempCanvas = document.createElement('canvas');
+        const maxDimension = 1024;
+        const scale = Math.min(1, maxDimension / Math.max(this.canvas.width, this.canvas.height));
+        
+        tempCanvas.width = this.canvas.width * scale;
+        tempCanvas.height = this.canvas.height * scale;
+        
+        const tempCtx = tempCanvas.getContext('2d');
+        tempCtx.fillStyle = 'white';
+        tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+        tempCtx.drawImage(this.canvas, 0, 0, tempCanvas.width, tempCanvas.height);
+        
+        // Try WebP format first, fallback to PNG if not supported
+        let dataUrl = tempCanvas.toDataURL('image/webp', 0.8);
+        if (dataUrl.indexOf('image/webp') === -1) {
+            // WebP not supported, use PNG
+            dataUrl = tempCanvas.toDataURL('image/png', 0.8);
+        }
+        
+        return dataUrl;
+    }
+    
+    getDrawingData() {
+        return {
+            width: this.canvas.width / (window.devicePixelRatio || 1),
+            height: this.canvas.height / (window.devicePixelRatio || 1),
+            paths: this.paths
+        };
+    }
+}
+
 class JeopardyClient {
     constructor() {
         this.server = null;
@@ -1048,8 +1691,12 @@ class JeopardyClient {
         this.audioContext = null;
         this.buzzLockState = false; // Track whether buzzer is enabled by host
         this.loginAttempted = false;
+        this.drawingMode = false;
+        this.drawingCanvas = null;
+        this.drawingSent = false;
         this.initAudio();
         this.initViewportHeight();
+        this.initDrawing();
         
         // Connected players list and fun messages
         this.connected_players = [];
@@ -1092,6 +1739,35 @@ class JeopardyClient {
         this.buzzButton.classList.add('host-disabled');
         
         this.init();
+    }
+    
+    initDrawing() {
+        // Initialize drawing overlay
+        this.drawingOverlay = document.getElementById("drawingOverlay");
+        
+        // Setup color picker
+        const colorOptions = document.querySelectorAll('.color-option');
+        colorOptions.forEach(option => {
+            option.addEventListener('click', (e) => {
+                colorOptions.forEach(opt => opt.classList.remove('selected'));
+                e.target.classList.add('selected');
+                if (this.drawingCanvas) {
+                    this.drawingCanvas.setColor(e.target.dataset.color);
+                }
+            });
+        });
+        
+        // Setup brush sizes
+        const brushSizes = document.querySelectorAll('.brush-size');
+        brushSizes.forEach(size => {
+            size.addEventListener('click', (e) => {
+                brushSizes.forEach(s => s.classList.remove('selected'));
+                e.target.classList.add('selected');
+                if (this.drawingCanvas) {
+                    this.drawingCanvas.setBrushSize(e.target.dataset.size);
+                }
+            });
+        });
     }
     
     init() {
@@ -1325,6 +2001,10 @@ class JeopardyClient {
             this.requestWager();
         } else if (message === "RESET_GAME") {
             this.resetGameState();
+        } else if (message === "DRAWING_MODE:ON") {
+            this.startDrawingMode();
+        } else if (message === "DRAWING_MODE:OFF") {
+            this.endDrawingMode();
         } else if (message && message.queue !== undefined) {
             this.updateQueue(message);
         } else if (message && message.error) {
@@ -1625,6 +2305,93 @@ class JeopardyClient {
         this.showErrorMessage("Game reset by host!");
     }
     
+    startDrawingMode() {
+        this.drawingMode = true;
+        this.drawingSent = false;
+        this.showDrawingModal();
+        this.showErrorMessage("Drawing mode activated!");
+        
+        // Hide other UI elements
+        this.buzzButton.style.display = "none";
+        this.finalAnswerInput.style.display = "none";
+        this.finalAnswerButton.style.display = "none";
+        this.wagerInput.style.display = "none";
+        this.wagerButton.style.display = "none";
+    }
+    
+    endDrawingMode() {
+        this.drawingMode = false;
+        this.hideDrawingModal();
+        this.showErrorMessage("Drawing mode ended!");
+        
+        // Show buzzer button again
+        this.buzzButton.style.display = "block";
+    }
+    
+    showDrawingModal() {
+        this.drawingOverlay.classList.add('show');
+        
+        // Initialize canvas if not already done
+        if (!this.drawingCanvas) {
+            const canvasElement = document.getElementById('drawingCanvas');
+            this.drawingCanvas = new DrawingCanvas(canvasElement);
+            
+            // Set up path update callback for real-time collaboration (future feature)
+            this.drawingCanvas.onPathUpdate = (pathData) => {
+                // Could send path updates in real-time here
+                // this.sendMessage("DRAWING_PATH:" + JSON.stringify(pathData));
+            };
+        }
+        
+        // Reset canvas
+        this.drawingCanvas.clear();
+    }
+    
+    hideDrawingModal() {
+        this.drawingOverlay.classList.remove('show');
+    }
+    
+    async submitDrawing() {
+        if (this.drawingSent || !this.drawingCanvas) {
+            return;
+        }
+        
+        // Add submitting state
+        this.drawingOverlay.classList.add('submitting');
+        
+        try {
+            // Get compressed image
+            const imageData = await this.drawingCanvas.getCompressedImage();
+            
+            // Get drawing data (paths)
+            const drawingData = this.drawingCanvas.getDrawingData();
+            
+            // Create submission object
+            const submission = {
+                username: this.local_username,
+                timestamp: Date.now(),
+                imageData: imageData,
+                drawingData: drawingData
+            };
+            
+            // Send to server
+            const success = this.sendMessage("DRAWING_SUBMIT:" + JSON.stringify(submission));
+            
+            if (success) {
+                this.drawingSent = true;
+                this.hideDrawingModal();
+                this.showErrorMessage("Drawing submitted!");
+            } else {
+                this.showErrorMessage("Failed to submit drawing - not connected!");
+            }
+        } catch (error) {
+            console.error("Error submitting drawing:", error);
+            this.showErrorMessage("Error submitting drawing!");
+        } finally {
+            this.drawingOverlay.classList.remove('submitting');
+        }
+    }
+    
     showWagerModal() {
         this.wagerOverlay.classList.add('show');
         this.wagerAmountInput.focus();
@@ -1690,6 +2457,36 @@ function sendFinalAnswer() {
 
 function sendWager() {
     jeopardyClient.sendWager();
+}
+
+function toggleEraser() {
+    if (jeopardyClient.drawingCanvas) {
+        const isEraser = jeopardyClient.drawingCanvas.toggleEraser();
+        const eraserBtn = document.querySelector('.tool-button.eraser');
+        if (isEraser) {
+            eraserBtn.classList.add('selected');
+            document.querySelector('.canvas-wrapper').classList.add('eraser-mode');
+        } else {
+            eraserBtn.classList.remove('selected');
+            document.querySelector('.canvas-wrapper').classList.remove('eraser-mode');
+        }
+    }
+}
+
+function clearCanvas() {
+    if (jeopardyClient.drawingCanvas) {
+        if (confirm('Clear the entire drawing?')) {
+            jeopardyClient.drawingCanvas.clear();
+        }
+    }
+}
+
+function submitDrawing() {
+    jeopardyClient.submitDrawing();
+}
+
+function closeDrawing() {
+    jeopardyClient.hideDrawingModal();
 }
 
 function handleLogin(event) {

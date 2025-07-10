@@ -773,6 +773,149 @@
         .wagers-section:not(:has(li)) {
             display: none;
         }
+        
+        /* Drawing mode controls */
+        .drawing-control-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        #drawingModeButton {
+            background-color: #8b5cf6;
+        }
+        
+        #drawingModeButton:hover {
+            background-color: #7c3aed;
+        }
+        
+        .drawings-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .drawings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .drawing-item {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 0.5rem;
+            border: 2px solid rgba(139, 92, 246, 0.3);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .drawing-item:hover {
+            transform: scale(1.05);
+            border-color: #8b5cf6;
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+        }
+        
+        .drawing-thumbnail {
+            width: 100%;
+            height: 150px;
+            background: white;
+            border-radius: 4px;
+            object-fit: contain;
+        }
+        
+        .drawing-info {
+            margin-top: 0.5rem;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+        
+        .drawing-username {
+            color: #8b5cf6;
+            font-weight: 600;
+        }
+        
+        .drawing-time {
+            color: #888;
+            font-size: 0.8rem;
+        }
+        
+        /* Drawing viewer modal */
+        .drawing-viewer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+        
+        .drawing-viewer.show {
+            display: flex;
+        }
+        
+        .drawing-viewer-content {
+            max-width: 90vw;
+            max-height: 90vh;
+            background: white;
+            border-radius: 8px;
+            padding: 2px;
+        }
+        
+        .drawing-viewer img {
+            max-width: 100%;
+            max-height: 100%;
+            display: block;
+        }
+        
+        .drawing-viewer-close {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        
+        .drawing-viewer-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        #clearDrawingsButton {
+            background-color: #ef4444;
+            margin-top: 1rem;
+        }
+        
+        #clearDrawingsButton:hover {
+            background-color: #dc2626;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .drawings-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+            
+            .drawing-thumbnail {
+                height: 120px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -825,6 +968,7 @@
                 <div class="secondary-buttons">
                     <button id="finalJeopardyButton" class="secondary-button" onclick="startFinalJeopardy()">Final Jeopardy</button>
                     <button id="wagerButton" class="secondary-button" onclick="requestWagers()">Request Wagers</button>
+                    <button id="drawingModeButton" class="secondary-button" onclick="toggleDrawingMode()">Drawing Mode</button>
                     <button id="resetButton" class="secondary-button" onclick="resetGame()">Reset Game</button>
                 </div>
             </div>
@@ -848,6 +992,19 @@
         <div class="final-answers-section">
             <h3 class="section-title">Final Answers</h3>
             <div id="finalAnswers"></div>
+        </div>
+        
+        <div class="drawings-section" id="drawingsSection" style="display: none;">
+            <h3 class="section-title">Player Drawings</h3>
+            <div id="drawingsGrid" class="drawings-grid"></div>
+            <button id="clearDrawingsButton" class="secondary-button" onclick="clearDrawings()" style="display: none;">Clear All Drawings</button>
+        </div>
+    </div>
+    
+    <div class="drawing-viewer" id="drawingViewer" onclick="closeDrawingViewer(event)">
+        <button class="drawing-viewer-close" onclick="closeDrawingViewer()">Close</button>
+        <div class="drawing-viewer-content" onclick="event.stopPropagation()">
+            <img id="drawingViewerImage" src="" alt="Drawing">
         </div>
     </div>
 
@@ -929,11 +1086,18 @@
                 this.finalAnswersDiv = document.getElementById("finalAnswers");
                 this.connectedPlayersDiv = document.getElementById("connectedPlayers");
                 this.wagersSectionDiv = document.getElementById("wagersSection");
+                this.drawingsSectionDiv = document.getElementById("drawingsSection");
+                this.drawingsGridDiv = document.getElementById("drawingsGrid");
+                
+                // Drawing mode state
+                this.drawingMode = false;
+                this.drawings = [];
                 
                 console.log("DOM elements:", {
                     toggleSwitch: this.toggleSwitch,
                     queueDiv: this.queueDiv,
-                    finalAnswersDiv: this.finalAnswersDiv
+                    finalAnswersDiv: this.finalAnswersDiv,
+                    drawingsSectionDiv: this.drawingsSectionDiv
                 });
                 
                 console.log("About to call init()...");
@@ -1168,6 +1332,18 @@
                     }
                 }
                 
+                if (typeof message === "string" && message.startsWith("DRAWING_SUBMIT:")) {
+                    let components = message.split(":", 2);
+                    if (components.length >= 2) {
+                        try {
+                            const drawingData = JSON.parse(message.substring(components[0].length + 1));
+                            this.handleDrawingSubmission(drawingData);
+                        } catch (e) {
+                            console.error("Error parsing drawing submission:", e);
+                        }
+                    }
+                }
+                
                 if (message && message.error) {
                     console.error("Server error:", message.error);
                     this.showErrorMessage("Server error: " + message.error);
@@ -1326,8 +1502,101 @@
                     this.wagersSectionDiv.innerHTML = "";
                     // Clear final answers section
                     this.finalAnswersDiv.innerHTML = "";
+                    // Clear drawings
+                    this.clearDrawings();
+                    // Reset drawing mode
+                    this.drawingMode = false;
+                    this.updateDrawingModeButton();
                 }
                 return success;
+            }
+            
+            toggleDrawingMode() {
+                this.drawingMode = !this.drawingMode;
+                const message = this.drawingMode ? "DRAWING_MODE:ON" : "DRAWING_MODE:OFF";
+                const success = this.sendMessage(message);
+                
+                if (success) {
+                    this.updateDrawingModeButton();
+                    if (this.drawingMode) {
+                        this.drawingsSectionDiv.style.display = "block";
+                        this.toggleSwitch.checked = false; // Turn off buzzer
+                        this.sendMessage("LOCK");
+                    } else {
+                        // Keep drawings visible after mode ends
+                    }
+                }
+                return success;
+            }
+            
+            updateDrawingModeButton() {
+                const button = document.getElementById("drawingModeButton");
+                if (this.drawingMode) {
+                    button.textContent = "End Drawing";
+                    button.style.backgroundColor = "#dc2626";
+                    button.onmouseover = function() { this.style.backgroundColor = "#ef4444"; };
+                    button.onmouseout = function() { this.style.backgroundColor = "#dc2626"; };
+                } else {
+                    button.textContent = "Drawing Mode";
+                    button.style.backgroundColor = "#8b5cf6";
+                    button.onmouseover = function() { this.style.backgroundColor = "#7c3aed"; };
+                    button.onmouseout = function() { this.style.backgroundColor = "#8b5cf6"; };
+                }
+            }
+            
+            handleDrawingSubmission(drawingData) {
+                // Add to drawings array
+                this.drawings.push(drawingData);
+                
+                // Create drawing element
+                const drawingItem = document.createElement("div");
+                drawingItem.className = "drawing-item";
+                drawingItem.onclick = () => this.viewDrawing(drawingData);
+                
+                const img = document.createElement("img");
+                img.className = "drawing-thumbnail";
+                img.src = drawingData.imageData;
+                img.alt = `Drawing by ${drawingData.username}`;
+                
+                const info = document.createElement("div");
+                info.className = "drawing-info";
+                
+                const username = document.createElement("div");
+                username.className = "drawing-username";
+                username.textContent = drawingData.username;
+                
+                const time = document.createElement("div");
+                time.className = "drawing-time";
+                time.textContent = new Date(drawingData.timestamp).toLocaleTimeString();
+                
+                info.appendChild(username);
+                info.appendChild(time);
+                drawingItem.appendChild(img);
+                drawingItem.appendChild(info);
+                
+                this.drawingsGridDiv.appendChild(drawingItem);
+                
+                // Show clear button if we have drawings
+                if (this.drawings.length > 0) {
+                    document.getElementById("clearDrawingsButton").style.display = "block";
+                }
+                
+                // Show notification
+                this.showErrorMessage(`Drawing received from ${drawingData.username}!`);
+            }
+            
+            viewDrawing(drawingData) {
+                const viewer = document.getElementById("drawingViewer");
+                const img = document.getElementById("drawingViewerImage");
+                img.src = drawingData.imageData;
+                img.alt = `Drawing by ${drawingData.username}`;
+                viewer.classList.add("show");
+            }
+            
+            clearDrawings() {
+                this.drawings = [];
+                this.drawingsGridDiv.innerHTML = "";
+                document.getElementById("clearDrawingsButton").style.display = "none";
             }
         }
         
@@ -1421,6 +1690,22 @@
         
         function resetGame() {
             if (jeopardyHost) jeopardyHost.resetGame();
+        }
+        
+        function toggleDrawingMode() {
+            if (jeopardyHost) jeopardyHost.toggleDrawingMode();
+        }
+        
+        function clearDrawings() {
+            if (confirm('Clear all drawings?')) {
+                if (jeopardyHost) jeopardyHost.clearDrawings();
+            }
+        }
+        
+        function closeDrawingViewer(event) {
+            if (!event || event.target === event.currentTarget) {
+                document.getElementById("drawingViewer").classList.remove("show");
+            }
         }
         
         function handleLogin(event) {
