@@ -451,6 +451,63 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.3);
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
+        .scores-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .player-score-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            background: rgba(255, 215, 0, 0.1);
+            border-radius: 6px;
+            border-left: 4px solid #FFD700;
+        }
+        .player-score-name {
+            font-weight: 600;
+            color: #FFD700;
+            flex: 1;
+        }
+        .player-score-value {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #fff;
+            min-width: 80px;
+            text-align: center;
+        }
+        .score-controls {
+            display: flex;
+            gap: 0.5rem;
+            margin-left: 1rem;
+        }
+        .score-button {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.9rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+            color: white;
+        }
+        .score-button.add {
+            background-color: #22c55e;
+        }
+        .score-button.add:hover {
+            background-color: #16a34a;
+        }
+        .score-button.subtract {
+            background-color: #ef4444;
+        }
+        .score-button.subtract:hover {
+            background-color: #dc2626;
+        }
         #connectedPlayers ul {
             list-style-type: none;
             padding: 0;
@@ -939,6 +996,18 @@
                     >
                     <div class="form-error" id="gameCodeError">Game code is required</div>
                 </div>
+                <div class="form-group">
+                    <label class="form-label" for="hostPassword">Host Password</label>
+                    <input 
+                        type="password" 
+                        id="hostPassword" 
+                        class="form-input" 
+                        placeholder="Enter host password" 
+                        autocomplete="off"
+                        spellcheck="false"
+                    >
+                    <div class="form-error" id="passwordError">Invalid host password</div>
+                </div>
                 <button type="submit" class="form-button" id="connectButton">
                     Connect as Host
                 </button>
@@ -961,6 +1030,14 @@
                 </label>
             </div>
             
+            <div class="switchContainer" style="margin-top: 1.5rem;">
+                <div class="switch-label">Scoreboard</div>
+                <label class="switch">
+                    <input type="checkbox" id="scoreboardSwitch">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            
             <div class="button-grid">
                 <div class="primary-buttons">
                     <button id="winButton" class="primary-button" onclick="markWin()">✓ Correct!</button>
@@ -978,6 +1055,11 @@
         <div class="players-section">
             <h3 class="section-title">Connected Players</h3>
             <div id="connectedPlayers"></div>
+        </div>
+        
+        <div class="scores-section" id="scoresSection" style="display: none;">
+            <h3 class="section-title">Player Scores</h3>
+            <div id="playerScores"></div>
         </div>
         
         <div class="queue-section">
@@ -1083,22 +1165,30 @@
                 
                 // DOM elements
                 this.toggleSwitch = document.getElementById("toggleSwitch");
+                this.scoreboardSwitch = document.getElementById("scoreboardSwitch");
                 this.queueDiv = document.getElementById("queue");
                 this.finalAnswersDiv = document.getElementById("finalAnswers");
                 this.connectedPlayersDiv = document.getElementById("connectedPlayers");
                 this.wagersSectionDiv = document.getElementById("wagersSection");
                 this.drawingsSectionDiv = document.getElementById("drawingsSection");
                 this.drawingsGridDiv = document.getElementById("drawingsGrid");
+                this.scoresSectionDiv = document.getElementById("scoresSection");
+                this.playerScoresDiv = document.getElementById("playerScores");
                 
                 // Drawing mode state
                 this.drawingMode = false;
                 this.drawings = [];
                 
+                // Scoreboard state
+                this.scoreboardEnabled = false;
+                this.playerScores = {};
+                
                 console.log("DOM elements:", {
                     toggleSwitch: this.toggleSwitch,
                     queueDiv: this.queueDiv,
                     finalAnswersDiv: this.finalAnswersDiv,
-                    drawingsSectionDiv: this.drawingsSectionDiv
+                    drawingsSectionDiv: this.drawingsSectionDiv,
+                    scoresSectionDiv: this.scoresSectionDiv
                 });
                 
                 console.log("About to call init()...");
@@ -1120,8 +1210,9 @@
                 this.setupEventListeners();
             }
             
-            startConnection(gameCode) {
+            startConnection(gameCode, password) {
                 this.server = gameCode;
+                this.hostPassword = password;
                 this.loginAttempted = true;
                 this.connect();
             }
@@ -1204,6 +1295,18 @@
                         this.sendMessage("LOCK");
                     }
                 };
+                
+                this.scoreboardSwitch.onchange = () => {
+                    this.scoreboardEnabled = this.scoreboardSwitch.checked;
+                    this.sendMessage(`TOGGLE_SCOREBOARD:${this.scoreboardEnabled ? 'ON' : 'OFF'}`);
+                    
+                    if (this.scoreboardEnabled) {
+                        this.scoresSectionDiv.style.display = 'block';
+                        this.updateScoreDisplay();
+                    } else {
+                        this.scoresSectionDiv.style.display = 'none';
+                    }
+                };
             }
             
             connect() {
@@ -1258,7 +1361,9 @@
                     loginOverlay.classList.add('hidden');
                 }
                 
-                this.sendMessage("host");
+                // Send host with password
+                const password = this.hostPassword || '';
+                this.sendMessage(`host:${password}`);
                 this.startHeartbeat();
             }
             
@@ -1288,6 +1393,24 @@
                     
                     let listHtml = message.queue.map(username => "<li>" + username + "</li>").join("");
                     this.queueDiv.innerHTML = "<ul>" + listHtml + "</ul>";
+                    
+                    // Update scoreboard state
+                    if (message.scoreboard_enabled !== undefined) {
+                        this.scoreboardEnabled = message.scoreboard_enabled;
+                        this.scoreboardSwitch.checked = this.scoreboardEnabled;
+                        
+                        if (this.scoreboardEnabled) {
+                            this.scoresSectionDiv.style.display = 'block';
+                        } else {
+                            this.scoresSectionDiv.style.display = 'none';
+                        }
+                    }
+                    
+                    // Update scores if provided
+                    if (message.scores !== undefined) {
+                        this.playerScores = message.scores;
+                        this.updateScoreDisplay();
+                    }
                 }
                 
                 if (message && message.connected_players !== undefined) {
@@ -1295,6 +1418,11 @@
                         `<li><span class="connection-indicator"></span>${username}</li>`
                     ).join("");
                     this.connectedPlayersDiv.innerHTML = `<ul>${connectedHtml}</ul>`;
+                    
+                    // Update score display to ensure all players are shown
+                    if (this.scoreboardEnabled) {
+                        this.updateScoreDisplay();
+                    }
                 }
                 
                 if (typeof message === "string" && message.startsWith("FINAL_ANSWER:")) {
@@ -1399,17 +1527,59 @@
             
             startHeartbeat() {
                 this.stopHeartbeat();
-                this.heartbeatInterval = setInterval(() => {
+                
+                // Use Page Visibility API to adjust heartbeat frequency
+                const sendHeartbeat = () => {
                     if (this.socket && this.socket.readyState === WebSocket.OPEN) {
                         this.sendMessage("PING");
                     }
-                }, 25000);
+                };
+                
+                // Regular heartbeat interval
+                const regularInterval = 25000; // 25 seconds
+                const visibleInterval = 15000; // 15 seconds when tab becomes visible
+                
+                // Set up regular heartbeat
+                this.heartbeatInterval = setInterval(sendHeartbeat, regularInterval);
+                
+                // Set up visibility change handler
+                this.handleVisibilityChange = () => {
+                    if (document.visibilityState === 'visible') {
+                        // Tab became visible - send immediate heartbeat and temporarily increase frequency
+                        sendHeartbeat();
+                        
+                        // Clear existing interval
+                        if (this.heartbeatInterval) {
+                            clearInterval(this.heartbeatInterval);
+                        }
+                        
+                        // Use faster interval temporarily
+                        this.heartbeatInterval = setInterval(sendHeartbeat, visibleInterval);
+                        
+                        // Return to normal interval after 1 minute
+                        setTimeout(() => {
+                            if (this.heartbeatInterval) {
+                                clearInterval(this.heartbeatInterval);
+                                this.heartbeatInterval = setInterval(sendHeartbeat, regularInterval);
+                            }
+                        }, 60000);
+                    }
+                };
+                
+                // Add visibility change listener
+                document.addEventListener('visibilitychange', this.handleVisibilityChange);
             }
             
             stopHeartbeat() {
                 if (this.heartbeatInterval) {
                     clearInterval(this.heartbeatInterval);
                     this.heartbeatInterval = null;
+                }
+                
+                // Remove visibility change listener
+                if (this.handleVisibilityChange) {
+                    document.removeEventListener('visibilitychange', this.handleVisibilityChange);
+                    this.handleVisibilityChange = null;
                 }
             }
             
@@ -1509,6 +1679,9 @@
                     // Reset drawing mode
                     this.drawingMode = false;
                     this.updateDrawingModeButton();
+                    // Reset scores
+                    this.playerScores = {};
+                    this.updateScoreDisplay();
                 }
                 return success;
             }
@@ -1598,6 +1771,45 @@
                 document.getElementById("clearDrawingsButton").style.display = "none";
                 // Notify all clients to clear their drawings
                 this.sendMessage("CLEAR_DRAWINGS");
+            }
+            
+            updateScoreDisplay() {
+                if (!this.playerScoresDiv) return;
+                
+                // Get all players from scores object
+                const players = Object.keys(this.playerScores).sort();
+                
+                if (players.length === 0) {
+                    this.playerScoresDiv.innerHTML = '<p style="text-align: center; color: #888;">No players connected</p>';
+                    return;
+                }
+                
+                // Create score items for each player
+                const scoreHtml = players.map(player => {
+                    const score = this.playerScores[player] || 0;
+                    return `
+                        <div class="player-score-item">
+                            <span class="player-score-name">${player}</span>
+                            <span class="player-score-value">$${score}</span>
+                            <div class="score-controls">
+                                <button class="score-button add" onclick="updatePlayerScore('${player}', 100)">+100</button>
+                                <button class="score-button add" onclick="updatePlayerScore('${player}', 200)">+200</button>
+                                <button class="score-button add" onclick="updatePlayerScore('${player}', 500)">+500</button>
+                                <button class="score-button subtract" onclick="updatePlayerScore('${player}', -100)">-100</button>
+                                <button class="score-button subtract" onclick="updatePlayerScore('${player}', -200)">-200</button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                
+                this.playerScoresDiv.innerHTML = scoreHtml;
+            }
+            
+            updatePlayerScore(playerName, amount) {
+                const success = this.sendMessage(`SCORE_UPDATE:${playerName}:${amount}`);
+                if (!success) {
+                    this.showErrorMessage("Failed to update score - not connected!");
+                }
             }
         }
         
@@ -1709,19 +1921,38 @@
             }
         }
         
+        function updatePlayerScore(playerName, amount) {
+            if (jeopardyHost) jeopardyHost.updatePlayerScore(playerName, amount);
+        }
+        
         function handleLogin(event) {
             event.preventDefault();
             
             const gameCodeInput = document.getElementById('gameCode');
+            const passwordInput = document.getElementById('hostPassword');
             const gameCodeError = document.getElementById('gameCodeError');
+            const passwordError = document.getElementById('passwordError');
             const connectButton = document.getElementById('connectButton');
             
             // Reset errors
             gameCodeError.classList.remove('show');
+            passwordError.classList.remove('show');
             
-            // Validate input
+            // Validate inputs
+            let hasError = false;
+            
             if (!gameCodeInput.value.trim()) {
                 gameCodeError.classList.add('show');
+                hasError = true;
+            }
+            
+            if (!passwordInput.value.trim()) {
+                passwordError.textContent = 'Password is required';
+                passwordError.classList.add('show');
+                hasError = true;
+            }
+            
+            if (hasError) {
                 return;
             }
             
@@ -1729,14 +1960,17 @@
             connectButton.disabled = true;
             connectButton.textContent = 'Connecting...';
             gameCodeInput.disabled = true;
+            passwordInput.disabled = true;
             
             // Start connection
-            jeopardyHost.startConnection(gameCodeInput.value.trim());
+            jeopardyHost.startConnection(gameCodeInput.value.trim(), passwordInput.value.trim());
         }
         
         // Handle connection errors by re-enabling the form
         window.addEventListener('connectionError', function() {
             const gameCodeInput = document.getElementById('gameCode');
+            const passwordInput = document.getElementById('hostPassword');
+            const passwordError = document.getElementById('passwordError');
             const connectButton = document.getElementById('connectButton');
             const loginOverlay = document.getElementById('loginOverlay');
             
@@ -1744,6 +1978,13 @@
             connectButton.disabled = false;
             connectButton.textContent = 'Connect as Host';
             gameCodeInput.disabled = false;
+            passwordInput.disabled = false;
+            
+            // Show password error if it was an authentication issue
+            if (jeopardyHost.connectionState !== 'connected') {
+                passwordError.textContent = 'Invalid password or connection error';
+                passwordError.classList.add('show');
+            }
             
             // Show login overlay again
             loginOverlay.classList.remove('hidden');

@@ -823,6 +823,44 @@ input[type="text"]:focus, input[type="number"]:focus {
   padding: 0.75rem 1.5rem;
 }
 
+/* Score display styles */
+.score-display {
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 215, 0, 0.2));
+  border: 2px solid #FFD700;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin: 1rem 0 2rem 0;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(255, 215, 0, 0.3);
+  animation: scoreGlow 3s ease-in-out infinite;
+}
+
+@keyframes scoreGlow {
+  0%, 100% {
+    box-shadow: 0 4px 20px rgba(255, 215, 0, 0.3);
+  }
+  50% {
+    box-shadow: 0 6px 30px rgba(255, 215, 0, 0.5);
+  }
+}
+
+.score-label {
+  font-size: 1rem;
+  color: #FFD700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.score-value {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #fff;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+  font-family: monospace;
+}
+
 /* Drawing mode styles */
 .drawing-overlay {
   position: fixed;
@@ -1481,6 +1519,11 @@ input[type="text"]:focus, input[type="number"]:focus {
   <p id="penalty_message">CAN'T RIG IT</p>
   <p id="sent_message" style="display: none; font-style: italic; font-size: 1.1rem; color: #4CAF50; margin-top: 1rem;">Sent!</p>
   
+  <div id="scoreDisplay" class="score-display" style="display: none;">
+    <div class="score-label">Your Score</div>
+    <div id="playerScore" class="score-value">$0</div>
+  </div>
+  
   <div id="queue"></div>
   
   <button id="buzzButton" onclick="buzz()">
@@ -1923,6 +1966,8 @@ class JeopardyClient {
         this.penaltyMessage = document.getElementById("penalty_message");
         this.connectionStatus = document.getElementById("connection_status");
         this.status = document.getElementById("status");
+        this.scoreDisplay = document.getElementById("scoreDisplay");
+        this.playerScore = document.getElementById("playerScore");
         
         // New modal elements
         this.wagerOverlay = document.getElementById("wagerOverlay");
@@ -2268,17 +2313,59 @@ class JeopardyClient {
     
     startHeartbeat() {
         this.stopHeartbeat();
-        this.heartbeatInterval = setInterval(() => {
+        
+        // Use Page Visibility API to adjust heartbeat frequency
+        const sendHeartbeat = () => {
             if (this.socket && this.socket.readyState === WebSocket.OPEN) {
                 this.sendMessage("PING");
             }
-        }, 25000); // Send ping every 25 seconds
+        };
+        
+        // Regular heartbeat interval
+        const regularInterval = 25000; // 25 seconds
+        const visibleInterval = 15000; // 15 seconds when tab becomes visible
+        
+        // Set up regular heartbeat
+        this.heartbeatInterval = setInterval(sendHeartbeat, regularInterval);
+        
+        // Set up visibility change handler
+        this.handleVisibilityChange = () => {
+            if (document.visibilityState === 'visible') {
+                // Tab became visible - send immediate heartbeat and temporarily increase frequency
+                sendHeartbeat();
+                
+                // Clear existing interval
+                if (this.heartbeatInterval) {
+                    clearInterval(this.heartbeatInterval);
+                }
+                
+                // Use faster interval temporarily
+                this.heartbeatInterval = setInterval(sendHeartbeat, visibleInterval);
+                
+                // Return to normal interval after 1 minute
+                setTimeout(() => {
+                    if (this.heartbeatInterval) {
+                        clearInterval(this.heartbeatInterval);
+                        this.heartbeatInterval = setInterval(sendHeartbeat, regularInterval);
+                    }
+                }, 60000);
+            }
+        };
+        
+        // Add visibility change listener
+        document.addEventListener('visibilitychange', this.handleVisibilityChange);
     }
     
     stopHeartbeat() {
         if (this.heartbeatInterval) {
             clearInterval(this.heartbeatInterval);
             this.heartbeatInterval = null;
+        }
+        
+        // Remove visibility change listener
+        if (this.handleVisibilityChange) {
+            document.removeEventListener('visibilitychange', this.handleVisibilityChange);
+            this.handleVisibilityChange = null;
         }
     }
     
@@ -2425,6 +2512,17 @@ class JeopardyClient {
                 this.buzzButton.classList.add('host-disabled');
             }
         }
+        
+        // Update scoreboard display
+        if (message.scoreboard_enabled !== undefined) {
+            if (message.scoreboard_enabled && message.scores) {
+                this.scoreDisplay.style.display = 'block';
+                const myScore = message.scores[this.local_username] || 0;
+                this.playerScore.textContent = `$${myScore}`;
+            } else {
+                this.scoreDisplay.style.display = 'none';
+            }
+        }
     }
     
     buzz() {
@@ -2514,6 +2612,10 @@ class JeopardyClient {
         // Clear drawings
         this.clearReceivedDrawings();
         this.drawingSent = false;
+        
+        // Reset score display
+        this.scoreDisplay.style.display = 'none';
+        this.playerScore.textContent = '$0';
         
         this.showErrorMessage("Game reset by host!");
     }
