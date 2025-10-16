@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mason Rigs It - The Uncomfortable Truth</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+            animation: fadeInDown 1s ease-out;
+        }
+
+        h1 {
+            font-size: 3em;
+            color: #FFD700;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+            margin-bottom: 10px;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        .subtitle {
+            font-size: 1.3em;
+            color: #ff6b6b;
+            font-style: italic;
+            margin-top: 10px;
+        }
+
+        .warning-banner {
+            background: rgba(255, 107, 107, 0.2);
+            border: 2px solid #ff6b6b;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 30px 0;
+            text-align: center;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .warning-banner h2 {
+            color: #ff6b6b;
+            font-size: 1.8em;
+            margin-bottom: 10px;
+        }
+
+        .evidence-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid #FFD700;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 25px 0;
+            transition: all 0.3s ease;
+            animation: slideIn 0.6s ease-out;
+            animation-fill-mode: both;
+        }
+
+        .evidence-card:nth-child(1) { animation-delay: 0.1s; }
+        .evidence-card:nth-child(2) { animation-delay: 0.2s; }
+        .evidence-card:nth-child(3) { animation-delay: 0.3s; }
+        .evidence-card:nth-child(4) { animation-delay: 0.4s; }
+        .evidence-card:nth-child(5) { animation-delay: 0.5s; }
+        .evidence-card:nth-child(6) { animation-delay: 0.6s; }
+
+        .evidence-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.3);
+        }
+
+        .evidence-card h3 {
+            color: #FFD700;
+            font-size: 1.5em;
+            margin-bottom: 15px;
+        }
+
+        .evidence-card p {
+            line-height: 1.8;
+            color: #e0e0e0;
+        }
+
+        .stat {
+            display: inline-block;
+            background: rgba(255, 215, 0, 0.2);
+            color: #FFD700;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin: 5px;
+        }
+
+        .victim {
+            color: #ff6b6b;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .rigging-methods {
+            background: rgba(255, 215, 0, 0.1);
+            border-left: 4px solid #FFD700;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .rigging-methods ul {
+            margin-left: 20px;
+            margin-top: 10px;
+        }
+
+        .rigging-methods li {
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+
+        .trophy {
+            font-size: 3em;
+            text-align: center;
+            margin: 30px 0;
+            animation: spin 4s linear infinite;
+        }
+
+        .conclusion {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 107, 107, 0.2));
+            border: 3px solid #FFD700;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 40px 0;
+            text-align: center;
+        }
+
+        .conclusion h2 {
+            color: #FFD700;
+            font-size: 2em;
+            margin-bottom: 15px;
+        }
+
+        .conspiracy-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.1;
+        }
+
+        .conspiracy-line {
+            position: absolute;
+            width: 2px;
+            background: #FFD700;
+            transform-origin: 0 0;
+            animation: drawLine 3s ease-out forwards;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
+            to { text-shadow: 0 0 30px rgba(255, 215, 0, 0.8); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes drawLine {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px;
+            color: #888;
+            font-style: italic;
+        }
+
+        .back-link {
+            display: inline-block;
+            background: rgba(255, 215, 0, 0.2);
+            color: #FFD700;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            border: 2px solid #FFD700;
+        }
+
+        .back-link:hover {
+            background: rgba(255, 215, 0, 0.3);
+            transform: scale(1.05);
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2em;
+            }
+
+            .subtitle {
+                font-size: 1.1em;
+            }
+
+            .evidence-card {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="conspiracy-bg" id="conspiracy"></div>
+
+    <div class="container">
+        <header>
+            <h1>🎯 MASON RIGS IT 🎯</h1>
+            <p class="subtitle">An Exposé on the Greatest Gaming Scandal of Our Time</p>
+        </header>
+
+        <div class="warning-banner">
+            <h2>⚠️ CLASSIFIED INFORMATION ⚠️</h2>
+            <p>The following evidence has been compiled through extensive research and many salty tears from <span class="victim">Corey</span></p>
+        </div>
+
+        <div class="evidence-card">
+            <h3>📊 The Damning Statistics</h3>
+            <p>Mason's winning percentage is <span class="stat">suspiciously high</span>. Some might call it "skill," but we know better.</p>
+            <p>Win rate against Corey: <span class="stat">∞%</span> (mathematically impossible, yet here we are)</p>
+            <p>Games thrown to avoid suspicion: <span class="stat">0</span> (too confident, clearly rigged)</p>
+        </div>
+
+        <div class="evidence-card">
+            <h3>🎮 Documented Cases of Rigging</h3>
+            <div class="rigging-methods">
+                <strong>Known Methods of Deception:</strong>
+                <ul>
+                    <li>🔧 <strong>Buzzer Manipulation:</strong> Mason's buzzer somehow has a 0.0001ms response time advantage (totally not just faster reflexes)</li>
+                    <li>🧠 <strong>Mind Reading Technology:</strong> Always knows the answer before the question is fully read (definitely not just paying attention)</li>
+                    <li>⏱️ <strong>Time Distortion:</strong> Appears to have more time to answer than everyone else (certainly not just being prepared)</li>
+                    <li>🎲 <strong>Probability Defiance:</strong> Wins even when the odds are "theoretically" equal (luck is clearly rigged)</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="evidence-card">
+            <h3>💔 Primary Victim: Corey</h3>
+            <p>Poor <span class="victim">Corey</span> has been the main victim of Mason's elaborate scheme. Despite being equally talented (citation needed), superior strategy (self-reported), and devastating good looks (controversial), Corey somehow keeps losing.</p>
+            <p><strong>Corey's Official Statement:</strong> "It's rigged. Has to be. There's no other explanation. I refuse to believe in any alternative reality."</p>
+        </div>
+
+        <div class="evidence-card">
+            <h3>🏆 Pattern Recognition</h3>
+            <p>Studies show that Mason wins:<br>
+            <span class="stat">100%</span> of games he wins<br>
+            <span class="stat">0%</span> of games he loses (but those don't count)<br>
+            <span class="stat">Somehow?%</span> of games where Corey thought he had it in the bag</p>
+        </div>
+
+        <div class="trophy">🏆</div>
+
+        <div class="evidence-card">
+            <h3>🔬 Scientific Analysis</h3>
+            <p>Leading experts (Corey and Corey's cat) have determined that the probability of Mason's success through legitimate means is approximately <span class="stat">0.00000001%</span></p>
+            <p>The remaining <span class="stat">99.99999999%</span> probability? You guessed it: <strong>RIGGED</strong></p>
+        </div>
+
+        <div class="evidence-card">
+            <h3>🎪 The Final Jeopardy Conspiracy</h3>
+            <p>In Final Jeopardy, Mason has demonstrated an uncanny ability to:</p>
+            <div class="rigging-methods">
+                <ul>
+                    <li>✍️ Answer correctly (too suspicious)</li>
+                    <li>💰 Wager the perfect amount (probability: impossible)</li>
+                    <li>⚡ Submit faster than physically possible (quantum tunneling?)</li>
+                    <li>😎 Remain calm under pressure (clearly has inside information)</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="conclusion">
+            <h2>The Inescapable Conclusion</h2>
+            <p style="font-size: 1.2em; line-height: 1.8;">
+                After careful consideration of all evidence, there can be only one explanation:
+                <strong style="color: #FFD700;">Mason has mastered the ancient art of winning through superior skill, knowledge, and reflexes.</strong>
+            </p>
+            <p style="margin-top: 20px; color: #ff6b6b; font-size: 1.1em;">
+                Which is <em>basically</em> the same thing as rigging it. Right? Right???
+            </p>
+            <p style="margin-top: 30px; font-size: 0.9em; color: #888;">
+                (Corey refuses to accept any other interpretation of these facts)
+            </p>
+        </div>
+
+        <footer>
+            <p>This investigation was brought to you by: Salt, Copium, and Corey's Wounded Pride™</p>
+            <p style="margin-top: 10px;">No Coreys were harmed in the making of this page (except emotionally)</p>
+            <a href="index.html" class="back-link">← Back to the Rigged Game</a>
+        </footer>
+    </div>
+
+    <script>
+        // Add some conspiracy board lines in the background for effect
+        function createConspiracyLines() {
+            const bg = document.getElementById('conspiracy');
+            const numLines = 15;
+
+            for (let i = 0; i < numLines; i++) {
+                const line = document.createElement('div');
+                line.className = 'conspiracy-line';
+                line.style.left = Math.random() * 100 + '%';
+                line.style.top = Math.random() * 100 + '%';
+                line.style.transform = `rotate(${Math.random() * 360}deg)`;
+                line.style.width = Math.random() * 300 + 100 + 'px';
+                line.style.animationDelay = Math.random() * 2 + 's';
+                bg.appendChild(line);
+            }
+        }
+
+        // Add glitch effect on hover to title
+        const title = document.querySelector('h1');
+        title.addEventListener('mouseover', function() {
+            this.style.transform = 'skew(-2deg)';
+            setTimeout(() => {
+                this.style.transform = 'skew(0deg)';
+            }, 100);
+        });
+
+        // Create conspiracy lines on load
+        window.addEventListener('load', createConspiracyLines);
+
+        // Random stats that update for comedic effect
+        const stats = document.querySelectorAll('.stat');
+        setInterval(() => {
+            const randomStat = stats[Math.floor(Math.random() * stats.length)];
+            randomStat.style.transform = 'scale(1.2)';
+            setTimeout(() => {
+                randomStat.style.transform = 'scale(1)';
+            }, 200);
+        }, 3000);
+    </script>
+</body>
+</html>
