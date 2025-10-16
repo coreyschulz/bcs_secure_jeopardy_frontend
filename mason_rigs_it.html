@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mason Rigs It - The Hosting Scandal</title>
+    <title>Mason Rigs It - The Glazing Scandal</title>
     <style>
         * {
             margin: 0;
@@ -83,6 +83,7 @@
         .evidence-card:nth-child(6) { animation-delay: 0.6s; }
         .evidence-card:nth-child(7) { animation-delay: 0.7s; }
         .evidence-card:nth-child(8) { animation-delay: 0.8s; }
+        .evidence-card:nth-child(9) { animation-delay: 0.9s; }
 
         .evidence-card:hover {
             transform: translateY(-5px);
@@ -113,7 +114,8 @@
         .victim {
             color: #ff6b6b;
             font-weight: bold;
-            font-size: 1.1em;
+            font-size: 1.2em;
+            text-shadow: 0 0 10px rgba(255, 107, 107, 0.5);
         }
 
         .perpetrator {
@@ -121,6 +123,29 @@
             font-weight: bold;
             font-size: 1.2em;
             text-shadow: 0 0 10px rgba(255, 68, 68, 0.5);
+        }
+
+        .beneficiaries {
+            color: #4CAF50;
+            font-weight: bold;
+            font-size: 1.2em;
+            text-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+        }
+
+        .glazing {
+            background: linear-gradient(90deg, #FFD700, #FFA500, #FFD700);
+            background-size: 200% 100%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: bold;
+            font-size: 1.3em;
+            animation: shine 3s linear infinite;
+        }
+
+        @keyframes shine {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
         }
 
         .rigging-methods {
@@ -175,6 +200,17 @@
         .secure-platform strong {
             color: #00ff00;
             font-size: 1.2em;
+        }
+
+        .silence {
+            background: rgba(128, 128, 128, 0.2);
+            border: 2px solid #888;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            text-align: center;
+            font-style: italic;
+            color: #aaa;
         }
 
         .conspiracy-bg {
@@ -264,6 +300,28 @@
             transform: scale(1.05);
         }
 
+        .comparison-table {
+            width: 100%;
+            margin: 20px 0;
+            border-collapse: collapse;
+        }
+
+        .comparison-table th {
+            background: rgba(255, 215, 0, 0.2);
+            padding: 12px;
+            border: 1px solid #FFD700;
+        }
+
+        .comparison-table td {
+            padding: 12px;
+            border: 1px solid #444;
+            text-align: center;
+        }
+
+        .comparison-table tr:nth-child(even) {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
         @media (max-width: 768px) {
             h1 {
                 font-size: 2em;
@@ -276,6 +334,10 @@
             .evidence-card {
                 padding: 15px;
             }
+
+            .comparison-table {
+                font-size: 0.9em;
+            }
         }
     </style>
 </head>
@@ -285,145 +347,285 @@
     <div class="container">
         <header>
             <h1>🎭 MASON RIGS IT 🎭</h1>
-            <p class="subtitle">An Exposé on Corrupt Game Hosting</p>
+            <p class="subtitle">The Greatest Glazing Scandal in BCS Secure Jeopardy History</p>
         </header>
 
         <div class="warning-banner">
-            <h2>⚠️ HOSTING CORRUPTION EXPOSED ⚠️</h2>
-            <p>How one corrupt host systematically manipulates a supposedly "bulletproof" platform</p>
+            <h2>⚠️ BLATANT FAVORITISM EXPOSED ⚠️</h2>
+            <p>An investigation into systematic host bias and the <span class="glazing">GLAZING</span> of certain players</p>
         </div>
 
         <div class="evidence-card">
-            <h3>🎪 The Setup</h3>
-            <p><span class="perpetrator">MASON</span>, acting as game host, has repeatedly created and hosted BCS Secure Jeopardy games with one sinister purpose: to rig the outcomes against unsuspecting players.</p>
+            <h3>🎪 The Scandal</h3>
+            <p>When <span class="perpetrator">MASON</span> hosts BCS Secure Jeopardy games, a disturbing pattern emerges:</p>
+
+            <p style="margin-top: 20px; font-size: 1.2em; text-align: center;">
+                <span class="beneficiaries">ALEX</span> and <span class="beneficiaries">JON</span> somehow <em>always</em> win.
+            </p>
+
+            <p style="margin-top: 20px; font-size: 1.2em; text-align: center;">
+                <span class="victim">COREY</span> somehow <em>always</em> loses.
+            </p>
 
             <div class="secure-platform">
                 <strong>🔒 "BCS Secure Jeopardy - Bulletproof Platform"</strong>
                 <p>Built with ironclad security, WebSocket integrity, and fair play mechanisms</p>
-                <p style="color: #ff6b6b; margin-top: 10px;">...or so they claim.</p>
             </div>
 
-            <p style="margin-top: 15px;">Despite the platform's supposedly unbreakable security, Mason has found ways to exploit his position of power as HOST to manipulate game outcomes.</p>
-        </div>
+            <p style="margin-top: 15px;">The platform is technically flawless. The HOST, however, is not.</p>
 
-        <div class="evidence-card">
-            <h3>💔 Primary Victims</h3>
-            <p>Mason's corrupt hosting has specifically targeted:</p>
-            <p style="margin-top: 15px; font-size: 1.3em;">
-                <span class="victim">ALEX</span> and <span class="victim">JON</span>
-            </p>
-            <p style="margin-top: 15px;">These poor souls joined games expecting fair competition, only to face Mason's elaborate rigging schemes at every turn.</p>
-
-            <div class="rigging-methods" style="margin-top: 20px;">
-                <strong>Victim Impact:</strong>
-                <ul>
-                    <li>💸 Alex: Lost <span class="stat">countless points</span> to "mysterious" host decisions</li>
-                    <li>🎯 Jon: Somehow always gets <span class="stat">BOOT</span>ed at critical moments</li>
-                    <li>😢 Combined emotional damage: <span class="stat">Immeasurable</span></li>
-                </ul>
+            <div class="silence">
+                🤐 And nobody is asking questions about it. 🤐
             </div>
         </div>
 
         <div class="evidence-card">
-            <h3>🔧 Host Manipulation Techniques</h3>
+            <h3>✨ The GLAZING ✨</h3>
+            <p>Mason doesn't just rig the games—he <span class="glazing">GLAZES</span> Alex and Jon with such obvious favoritism that it borders on parody:</p>
+
             <div class="rigging-methods">
-                <strong>Documented Methods of Corruption:</strong>
+                <strong>Observable Glazing Behaviors:</strong>
                 <ul>
-                    <li>👨‍⚖️ <strong>Selective Buzzer Recognition:</strong> Mason's host panel "mysteriously" shows Alex and Jon's buzzes last in the queue, even when they buzz first</li>
-                    <li>⏰ <strong>Penalty Timer Abuse:</strong> Alex gets 30-second penalties, while Mason's friends get 5 seconds (if penalized at all)</li>
-                    <li>🎲 <strong>Strategic BOOT Commands:</strong> Jon gets BOOTed for "incorrect" answers that were actually correct</li>
-                    <li>💰 <strong>Point Manipulation:</strong> "Accidentally" awards points to the wrong player, always benefiting Mason's favorites</li>
-                    <li>🎪 <strong>Final Jeopardy Shenanigans:</strong> Conveniently starts Final Jeopardy when Alex and Jon are in the lead</li>
-                    <li>📊 <strong>Wager Request Timing:</strong> Requests wagers at strategically disadvantageous moments for victims</li>
+                    <li>🌟 <strong>Constant Praise:</strong> "Wow Alex, great answer!" vs. "Corey, that's... technically incorrect"</li>
+                    <li>⏱️ <strong>Extra Time:</strong> Alex and Jon get "a few more seconds to think" while Corey gets instant BOOTs</li>
+                    <li>💯 <strong>Generous Grading:</strong> Jon's wrong answers are "close enough!" while Corey's right answers are "not specific enough"</li>
+                    <li>🎯 <strong>Strategic Leniency:</strong> Alex and Jon's penalties last 5 seconds, Corey's last until the heat death of the universe</li>
+                    <li>🏆 <strong>Miraculous Wins:</strong> Alex and Jon awarded points for breathing, Corey denied points for factually correct answers</li>
                 </ul>
             </div>
+
+            <p style="margin-top: 15px; font-size: 1.1em; color: #ff6b6b;">
+                The favoritism is so blatant, it's genuinely impressive that Mason thinks nobody notices.
+            </p>
         </div>
 
         <div class="evidence-card">
             <h3>📊 The Damning Statistics</h3>
-            <p>Analysis of Mason-hosted games reveals shocking patterns:</p>
-            <p style="margin-top: 15px;">
-                Games where Alex won fairly: <span class="stat">0</span><br>
-                Games where Jon won fairly: <span class="stat">0</span><br>
-                Times Mason claimed "I'm a fair host": <span class="stat">87</span><br>
-                Times that was actually true: <span class="stat">0</span>
-            </p>
-            <p style="margin-top: 15px;">
-                Probability this is coincidence: <span class="stat">0.000001%</span><br>
-                Probability this is blatant corruption: <span class="stat">99.999999%</span>
+            <p>When Mason hosts games, the numbers tell a crystal-clear story:</p>
+
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Player</th>
+                        <th>Win Rate in Mason Games</th>
+                        <th>Average Points</th>
+                        <th>Times BOOT'd</th>
+                        <th>Suspiciousness</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="beneficiaries">ALEX</span></td>
+                        <td><span class="stat">94%</span></td>
+                        <td><span class="stat">2,847</span></td>
+                        <td><span class="stat">2</span></td>
+                        <td><span class="stat">🚩🚩🚩🚩🚩</span></td>
+                    </tr>
+                    <tr>
+                        <td><span class="beneficiaries">JON</span></td>
+                        <td><span class="stat">91%</span></td>
+                        <td><span class="stat">2,654</span></td>
+                        <td><span class="stat">3</span></td>
+                        <td><span class="stat">🚩🚩🚩🚩🚩</span></td>
+                    </tr>
+                    <tr style="background: rgba(255, 107, 107, 0.1);">
+                        <td><span class="victim">COREY</span></td>
+                        <td><span class="stat">3%</span></td>
+                        <td><span class="stat">-450</span></td>
+                        <td><span class="stat">847</span></td>
+                        <td><span class="stat">💀💀💀</span></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p style="margin-top: 20px; text-align: center; font-size: 1.2em;">
+                Probability this is coincidence: <span class="stat">0.0000000001%</span>
             </p>
         </div>
 
-        <div class="corrupt-badge">🎭⚖️💀</div>
+        <div class="evidence-card">
+            <h3>💔 Corey: The Eternal Victim</h3>
+            <p><span class="victim">COREY</span> has endured systematic persecution in every Mason-hosted game:</p>
+
+            <div class="rigging-methods">
+                <strong>Documented Abuses Against Corey:</strong>
+                <ul>
+                    <li>📝 <strong>Answer Rejection:</strong> Corey gives the correct answer → Mason: "Actually, we were looking for a different wording"</li>
+                    <li>⚡ <strong>Buzzer Discrimination:</strong> Corey buzzes first → Somehow appears last in queue → Mason: "Sorry, Alex got in first!"</li>
+                    <li>⏰ <strong>Penalty Maximization:</strong> Minor incorrect answer → 60-second timeout → Meanwhile Jon says complete nonsense → "We'll give you another try, Jon!"</li>
+                    <li>💸 <strong>Point Theft:</strong> Corey earns points legitimately → Final Jeopardy conveniently starts → Corey loses everything</li>
+                    <li>🎲 <strong>Wager Sabotage:</strong> Mason requests wagers when Corey has the fewest points but Alex and Jon are loaded</li>
+                    <li>🚫 <strong>Final Jeopardy Conspiracy:</strong> Corey submits answer first → Mason: "Still waiting on answers..." → Sees Alex's answer → "Time's up!"</li>
+                </ul>
+            </div>
+
+            <p style="margin-top: 15px; color: #ff6b6b; font-size: 1.1em;"><strong>Corey's Record:</strong></p>
+            <p>Games won when Mason hosts: <span class="stat">0</span></p>
+            <p>Games won when literally anyone else hosts: <span class="stat">Actually competitive</span></p>
+            <p>Times Corey has complained: <span class="stat">∞</span></p>
+            <p>Times anyone listened: <span class="stat">0</span></p>
+        </div>
+
+        <div class="corrupt-badge">🎭👑💰</div>
+
+        <div class="evidence-card">
+            <h3>🏆 Alex and Jon: The Glazed Ones</h3>
+            <p><span class="beneficiaries">ALEX</span> and <span class="beneficiaries">JON</span> are the primary beneficiaries of Mason's corrupt hosting:</p>
+
+            <div class="rigging-methods">
+                <strong>Suspicious Advantages:</strong>
+                <ul>
+                    <li>✨ <strong>The Golden Treatment:</strong> Wrong answers accepted, right answers praised, participation trophies awarded</li>
+                    <li>🎯 <strong>Perfect Buzzer Timing:</strong> Always first in queue even when they buzz last (WebSocket "lag" only helps them)</li>
+                    <li>⏱️ <strong>Infinite Time Extensions:</strong> "Take your time, guys!" while Corey gets instant timeouts</li>
+                    <li>💰 <strong>Point Multiplication:</strong> Somehow their wins are worth more points than Corey's</li>
+                    <li>🛡️ <strong>Immunity from BOOT:</strong> Can say literally anything wrong and get another chance</li>
+                    <li>🎪 <strong>Final Jeopardy Advantage:</strong> Mason waits for their answers before cutting off time</li>
+                </ul>
+            </div>
+
+            <p style="margin-top: 15px;">Their win rates in Mason-hosted games vs. other-hosted games show a <span class="stat">+73% improvement</span> when Mason is in control. Totally normal!</p>
+        </div>
 
         <div class="evidence-card">
             <h3>🛡️ The "Bulletproof" Platform Paradox</h3>
-            <p>The BCS Secure Jeopardy platform claims to be:</p>
+            <p>BCS Secure Jeopardy is genuinely well-built:</p>
             <div class="rigging-methods">
                 <ul>
-                    <li>✅ Built with WebSocket security and heartbeat monitoring</li>
+                    <li>✅ WebSocket security with heartbeat monitoring</li>
+                    <li>✅ Cryptographically secure connections</li>
                     <li>✅ Fair buzz-in queue ordering</li>
                     <li>✅ Transparent point tracking</li>
-                    <li>✅ Tamper-proof game state management</li>
+                    <li>✅ Tamper-proof game state</li>
                 </ul>
             </div>
-            <p style="margin-top: 15px;"><strong>The Problem:</strong> All these safeguards assume the HOST is acting in good faith.</p>
-            <p style="margin-top: 10px; color: #ff6b6b; font-size: 1.1em;">Mason exploits this fundamental trust to abuse his host privileges.</p>
+
+            <p style="margin-top: 15px;"><strong>BUT:</strong> No platform can defend against a host who:</p>
+            <div class="rigging-methods">
+                <ul>
+                    <li>❌ Selectively awards WIN vs BOOT based on player name</li>
+                    <li>❌ Starts Final Jeopardy at strategically convenient times</li>
+                    <li>❌ Judges answers with blatant double standards</li>
+                    <li>❌ Uses host privileges to systematically favor certain players</li>
+                    <li>❌ <span class="glazing">GLAZES</span> his favorites while crushing everyone else</li>
+                </ul>
+            </div>
+
+            <p style="margin-top: 15px; color: #ff6b6b; font-size: 1.1em;">
+                The platform is secure. The host has absolutely zero chill.
+            </p>
         </div>
 
         <div class="evidence-card">
-            <h3>🎪 Documented Instances</h3>
+            <h3>🤐 The Conspiracy of Silence</h3>
+            <p style="font-size: 1.2em; margin-bottom: 15px;">
+                Here's the most disturbing part: <strong style="color: #ff6b6b;">NOBODY IS ASKING QUESTIONS.</strong>
+            </p>
+
             <div class="rigging-methods">
-                <strong>Case Files:</strong>
+                <strong>Observations That Should Raise Alarms:</strong>
                 <ul>
-                    <li><strong>Game #1:</strong> Alex buzzed in first on Final Jeopardy, but Mason's host panel showed him as 3rd. Alex lost. Mason claimed "WebSocket lag." Sure, Mason. Sure.</li>
-                    <li><strong>Game #2:</strong> Jon submitted the correct answer, was awarded WIN, then immediately BOOTed "by accident." Points never restored.</li>
-                    <li><strong>Game #3:</strong> Mason requested wagers immediately after Alex and Jon used their points, forcing them to wager low. Coincidence? We think not.</li>
-                    <li><strong>Game #4-∞:</strong> Pattern continues with suspicious consistency</li>
+                    <li>🔍 Alex and Jon's win rates in Mason games are statistically impossible</li>
+                    <li>🔍 Corey's complaints are dismissed as "salt" and "copium"</li>
+                    <li>🔍 Mason's excuses ("WebSocket lag", "I don't make the rules") are accepted without scrutiny</li>
+                    <li>🔍 The pattern has been consistent across dozens of games</li>
+                    <li>🔍 Alex and Jon never win by slim margins—they dominate suspiciously</li>
+                    <li>🔍 When other people host, outcomes are actually balanced</li>
+                </ul>
+            </div>
+
+            <div class="silence" style="margin-top: 20px;">
+                "It's just a game, Corey."<br>
+                "Maybe you're just not as good as Alex and Jon."<br>
+                "Stop being salty."<br>
+                "Mason wouldn't do that."
+            </div>
+
+            <p style="margin-top: 15px; color: #FFD700; font-size: 1.1em; text-align: center;">
+                <strong>The evidence is overwhelming. The silence is deafening.</strong>
+            </p>
+        </div>
+
+        <div class="evidence-card">
+            <h3>🎪 Documented Cases</h3>
+            <div class="rigging-methods">
+                <strong>Case Files from the Archives:</strong>
+                <ul>
+                    <li><strong>Game #47:</strong> Corey buzzes in 0.03 seconds before Alex. Mason's host panel shows Alex first. Alex wins 2400 points. Corey finishes with -200. Mason: "I just click what I see!"</li>
+
+                    <li><strong>Game #89:</strong> Question: "This president was elected in 1860." Corey: "Abraham Lincoln." Mason: "Sorry, we needed first and last name." Jon, 10 seconds later: "Uh, Abe?" Mason: "Correct! Great job Jon!"</li>
+
+                    <li><strong>Game #103:</strong> Corey submits correct Final Jeopardy answer first. Mason waits 45 seconds for Alex and Jon to submit theirs. Mason: "Time's up!" All three had the same answer. Alex and Jon awarded points, Corey gets BOOT for "taking too long." Corey submitted first.</li>
+
+                    <li><strong>Game #156:</strong> Mason requests wagers. Corey: 100 points. Alex: 2,400 points. Jon: 2,200 points. Next question goes to a wager round. What are the odds? (Actually: 100%. Mason chooses when to request wagers.)</li>
+
+                    <li><strong>Game #201:</strong> Corey gets 7 consecutive correct answers. Mason: "Wow Corey on a streak!" Immediately starts Final Jeopardy. Corey loses everything. Alex and Jon win. Mason: "Good game everyone!"</li>
+
+                    <li><strong>Game #247:</strong> Jon disconnects mid-game. Mason pauses everything and waits 5 minutes for Jon to reconnect. Next game, Corey's internet hiccups for 10 seconds. Mason immediately BOOTs Corey for "inactivity." The double standard is not even subtle.</li>
                 </ul>
             </div>
         </div>
 
         <div class="evidence-card">
-            <h3>🔍 How Mason Gets Away With It</h3>
-            <p>Mason's defense strategy:</p>
+            <h3>🔍 Mason's Defense Strategy</h3>
+            <p>When confronted with evidence of bias, Mason's responses:</p>
             <div class="rigging-methods">
                 <ul>
-                    <li>😇 "I'm just clicking what the game shows me!"</li>
-                    <li>🤷 "Must be a bug in the platform!"</li>
-                    <li>🎮 "I don't make the rules, I just enforce them!"</li>
-                    <li>💻 "The WebSocket must have delayed!"</li>
-                    <li>🎭 "This is just how the game works!"</li>
+                    <li>😇 "I'm just being a fair host!"</li>
+                    <li>🤷 "The WebSocket showed Alex buzzed first!"</li>
+                    <li>🎮 "I don't control the queue, the platform does!" (He literally controls WIN/BOOT)</li>
+                    <li>💻 "Must be lag on Corey's end!" (Every single time, somehow)</li>
+                    <li>🎭 "Alex and Jon are just better players!" (Only in Mason's games though)</li>
+                    <li>📊 "Statistics can be misleading!" (Not this misleading, Mason)</li>
+                    <li>🏆 "Corey just needs to practice more!" (Corey wins when others host)</li>
                 </ul>
             </div>
-            <p style="margin-top: 15px; color: #ff6b6b; font-size: 1.1em;"><strong>Translation:</strong> "I'm corrupt and you can't prove it (but you totally can)."</p>
+            <p style="margin-top: 15px; color: #ff6b6b; font-size: 1.1em;">
+                <strong>Translation:</strong> "I'm absolutely rigging it and you can't prove it beyond your mountain of statistical evidence, documented cases, and pattern of obvious favoritism."
+            </p>
         </div>
 
         <div class="conclusion">
             <h2>The Inescapable Conclusion</h2>
-            <p style="font-size: 1.2em; line-height: 1.8;">
-                Despite the BCS Secure Jeopardy platform being <strong style="color: #00ff00;">"bulletproof,"</strong>
-                no platform can protect against a <strong style="color: #ff6b6b;">corrupt host</strong> who abuses their position of power.
+            <p style="font-size: 1.3em; line-height: 1.8; margin-bottom: 20px;">
+                <span class="perpetrator">MASON</span> systematically rigs BCS Secure Jeopardy games in favor of
+                <span class="beneficiaries">ALEX</span> and <span class="beneficiaries">JON</span>
+                through blatant host bias and shameless <span class="glazing">GLAZING</span>.
             </p>
-            <p style="margin-top: 20px; color: #FFD700; font-size: 1.1em;">
-                <span class="perpetrator">MASON</span> has systematically rigged games against
-                <span class="victim">ALEX</span> and <span class="victim">JON</span>,
-                exploiting host privileges to manipulate outcomes.
+
+            <p style="font-size: 1.2em; margin-bottom: 20px;">
+                The platform is <strong style="color: #00ff00;">bulletproof</strong>.
             </p>
-            <p style="margin-top: 30px; font-size: 1.3em; color: #ff4444;">
-                The platform is secure.<br>
-                The host is not.
+
+            <p style="font-size: 1.2em; margin-bottom: 20px;">
+                The host is <strong style="color: #ff6b6b;">corrupt</strong>.
             </p>
+
+            <p style="font-size: 1.2em; margin-bottom: 30px;">
+                <span class="victim">COREY</span> deserves justice.
+            </p>
+
+            <div class="silence">
+                But nobody is asking questions about it.
+            </div>
+
+            <p style="margin-top: 30px; font-size: 1.4em; color: #FFD700;">
+                <strong>DEMAND ACCOUNTABILITY</strong>
+            </p>
+
             <p style="margin-top: 20px; font-size: 0.9em; color: #888;">
-                Justice for Alex and Jon ✊
+                The numbers don't lie. The favoritism is undeniable. The glazing is out of control.
             </p>
         </div>
 
         <footer>
-            <p>This investigation was brought to you by: Truth, Justice, and Alex & Jon's Stolen Victories™</p>
-            <p style="margin-top: 10px;">No platforms were harmed in the making of this page (just reputations)</p>
-            <p style="margin-top: 10px; color: #ff6b6b;">DEMAND FAIR HOSTING</p>
-            <a href="index.html" class="back-link">← Back to the Game (pray Mason isn't hosting)</a>
+            <p>This investigation was brought to you by: Truth, Mathematics, and Corey's Stolen Victories™</p>
+            <p style="margin-top: 10px;">Justice for Corey ✊</p>
+            <p style="margin-top: 10px; color: #ff6b6b;">STOP THE GLAZING</p>
+            <p style="margin-top: 10px; color: #888; font-size: 0.9em;">
+                (Alex and Jon are lovely people but this favoritism is ridiculous)
+            </p>
+            <a href="index.html" class="back-link">← Back to the Game (where Mason definitely isn't rigging anything)</a>
         </footer>
     </div>
 
@@ -431,7 +633,7 @@
         // Add some conspiracy board lines in the background for effect
         function createConspiracyLines() {
             const bg = document.getElementById('conspiracy');
-            const numLines = 20;
+            const numLines = 25;
 
             for (let i = 0; i < numLines; i++) {
                 const line = document.createElement('div');
@@ -471,12 +673,24 @@
         const perpetrators = document.querySelectorAll('.perpetrator');
         setInterval(() => {
             perpetrators.forEach(p => {
-                p.style.animation = 'none';
+                const angle = (Math.random() - 0.5) * 10;
+                p.style.transform = `rotate(${angle}deg)`;
                 setTimeout(() => {
-                    p.style.animation = '';
-                }, 10);
+                    p.style.transform = 'rotate(0deg)';
+                }, 100);
             });
-        }, 5000);
+        }, 4000);
+
+        // Make glazing text extra shiny
+        const glazingTexts = document.querySelectorAll('.glazing');
+        setInterval(() => {
+            glazingTexts.forEach(g => {
+                g.style.transform = 'scale(1.1)';
+                setTimeout(() => {
+                    g.style.transform = 'scale(1)';
+                }, 300);
+            });
+        }, 3500);
     </script>
 </body>
 </html>
